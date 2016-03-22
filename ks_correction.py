@@ -9,6 +9,30 @@ import pandas as pd
 from scipy.cluster.hierarchy import linkage, dendrogram
 
 ### FUNCTIONS
+def loadcluster(df,seq_names):
+    """
+    Load clusters with correponding pairs of samples and ks of them
+    :param df: the dataframe with all ks, filtered (0<ks<5)
+    :param seq_names: row names (index)
+    :return: a dictionary with cluster IDs and their component pairs as well as their ks
+    """
+    # There are n sequences/samples, so we are expecting n-1 events
+    # cluster_ID = ['Cluster'+str(i+1) for i in range(len(seq_names))]
+    clusters = {}
+    # for i in cluster_ID:
+    #     clusters[i]=[]
+    for i in range(len(seq_names)):
+        tmp = df[seq_names[i]].dropna()
+        tmp = tmp[tmp.index>i]
+        tmp_idx = tmp.index
+        for j in tmp_idx:
+            if not seq_names[j] in clusters:
+                clusters[seq_names[j]] = [[seq_names[i],seq_names[j],tmp.loc[j]]]
+            else:
+                clusters[seq_names[j]].append([seq_names[i],seq_names[j],tmp.loc[j]])
+    return clusters
+
+
 def correct_ks():
     yn00 = pycodeml.perform_codeml()
     seq_names = yn00.keys()
@@ -20,25 +44,24 @@ def correct_ks():
         dS_targets = [yn00[seq_names[i]][j]['NG86']['dS'] for j in targets]
         dS_targets.insert(i,0)
         dS_df[seq_names[i]] = dS_targets
-    dS_df.index=seq_names
+    # dS_df.index=seq_names
     dS_df_filtered = dS_df[dS_df<5][dS_df>0]
-    # There are n sequences/samples, so we are expecting n-1 events
-    cluster_ID = ['Cluster'+str(i+1) for i in range(len(seq_names))]
-    clusters = {}
-    for i in cluster_ID:
-        clusters[i]=[]
-    for i in seq_names:
-        tmp = dS_df_filtered[i].dropna()
-        tmp_idx = tmp.index()
+    clusters = loadcluster(dS_df_filtered,seq_names)
+    average_ks_per_cluster = []
+    for i in range(len(clusters.keys())):
+        tmp = [i[2] for i in clusters[clusters.keys()[i]]]
+        average_ks_per_cluster.append(sum(tmp)/len(tmp))
+    # Sort clusters by clade sizes
+    cluster_size = [len(clusters[i])+1 for i in clusters.keys()]
+    cluster_size_idx = [[j,i] for i,j in enumerate(cluster_size)]
+    cluster_size_idx.sort()
+    kS={}
+    for i in range(len(cluster_size_idx)):
+        idx = cluster_size_idx[i][1]
+        avg_ks = average_ks_per_cluster[cluster_size_idx[i][1]]
+        components = [j[0] for j in clusters[clusters.keys()[idx]]]+[clusters.keys()[idx]]
+        kS['cluster'+str(i+1)] = [avg_ks,components]
 
 
 
-
-
-
-
-
-
-    filtered_ks_w_idx = [i for i in total_ks_w_idx if i[1]<5]
-    return filtered_ks_w_idx
 
