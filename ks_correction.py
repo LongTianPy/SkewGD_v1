@@ -17,7 +17,8 @@ def loadcluster(df,seq_names):
     """
     # There are n sequences/samples, so we are expecting n-1 events
     # cluster_ID = ['Cluster'+str(i+1) for i in range(len(seq_names))]
-    clusters = {}
+    # clusters = {}
+    pairs = []
     # for i in cluster_ID:
     #     clusters[i]=[]
     for i in range(len(seq_names)):
@@ -25,11 +26,8 @@ def loadcluster(df,seq_names):
         tmp = tmp[tmp.index>i]
         tmp_idx = tmp.index
         for j in tmp_idx:
-            if not seq_names[j] in clusters:
-                clusters[seq_names[j]] = [[seq_names[i],tmp.loc[j]]]
-            else:
-                clusters[seq_names[j]].append([seq_names[i],tmp.loc[j]])
-    return clusters
+            pairs.append([seq_names[i],j,tmp.loc[j]])
+    return pairs
 
 
 def correct_ks():
@@ -46,6 +44,17 @@ def correct_ks():
     # dS_df.index=seq_names
     dS_df_filtered = dS_df[dS_df<5][dS_df>0]
     clusters = loadcluster(dS_df_filtered,seq_names)
+
+    k=1 # Count the number of clusters to be added
+
+
+
+
+
+
+
+
+
     average_ks_per_cluster = []
     for i in range(len(clusters.keys())):
         tmp = [i[2] for i in clusters[clusters.keys()[i]]]
