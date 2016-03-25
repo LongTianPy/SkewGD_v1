@@ -7,7 +7,7 @@ This script is written for getting the results from codeml.
 from Bio.Phylo.PAML import yn00
 import sys
 
-def perform_codeml(ctl_file):
+def perform_codeml():
     cml = yn00.Yn00()
     yn00.alignment = "TF105351.Eut.3.phy"
     yn00.tree = "TF105351.Eut.3.53876.tree"
