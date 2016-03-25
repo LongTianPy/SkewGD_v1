@@ -26,9 +26,9 @@ def loadcluster(df,seq_names):
         tmp_idx = tmp.index
         for j in tmp_idx:
             if not seq_names[j] in clusters:
-                clusters[seq_names[j]] = [[seq_names[i],seq_names[j],tmp.loc[j]]]
+                clusters[seq_names[j]] = [[seq_names[i],tmp.loc[j]]]
             else:
-                clusters[seq_names[j]].append([seq_names[i],seq_names[j],tmp.loc[j]])
+                clusters[seq_names[j]].append([seq_names[i],tmp.loc[j]])
     return clusters
 
 
