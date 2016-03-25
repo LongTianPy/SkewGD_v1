@@ -6,7 +6,6 @@ This script take the result of CODEML as input
 ### IMPORT
 import pycodeml
 import pandas as pd
-from scipy.cluster.hierarchy import linkage, dendrogram
 
 ### FUNCTIONS
 def loadcluster(df,seq_names):
@@ -61,6 +60,7 @@ def correct_ks():
         avg_ks = average_ks_per_cluster[cluster_size_idx[i][1]]
         components = [j[0] for j in clusters[clusters.keys()[idx]]]+[clusters.keys()[idx]]
         kS['cluster'+str(i+1)] = [avg_ks,components]
+    return kS
 
 
 
