@@ -26,7 +26,7 @@ def loadcluster(df,seq_names):
         tmp = tmp[tmp.index>i]
         tmp_idx = tmp.index
         for j in tmp_idx:
-            pairs.append([seq_names[i],j,tmp.loc[j]])
+            pairs.append([seq_names[i],seq_names[j],tmp.loc[j]])
     return pairs
 
 
