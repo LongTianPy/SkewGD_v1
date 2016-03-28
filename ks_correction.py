@@ -144,135 +144,147 @@ def cluster_finder(pairs):
     #                         continue
     #         closed_cluster.append(tmp)
     #         print tmp
+    pool = [] # To store those indices have been iterated and skip them
     for i in n_pairs:
         print i
-        print n_pairs
-        if tip_left[i] not in connection and tip_right[i] not in connection:
-            connection[tip_left[i]] = [tip_right[i]]
-            connection[tip_right[i]] = [tip_left[i]]
-            closed_cluster.append([tip_left[i],tip_right[i],ks_value[i]])
-        elif tip_left[i] in connection and tip_right[i] not in connection:
-            connection_to_find = connection[tip_left[i]]
-            connection[tip_right[i]]=[tip_left[i]]
-            connection[tip_left[i]].append(tip_right[i])
-            tmp_tips = []
-            tmp_ks = []
-            tmp_tips.append(tip_left[i])
-            tmp_tips.append(tip_right[i])
-            tmp_ks.append(ks_value[i])
-            try:
-                for each_connection in connection_to_find:
-                    idx = n_pairs.index(i)
-                    for j in n_pairs[idx+1:]:
-                        if tip_left[j] == each_connection and tip_right[j] == tip_right[idx]:
-                            print "If",j
-                            tmp_tips.append(tip_left[j])
-                            tmp_ks.append(ks_value[j])
-                            connection[tip_left[j]].append(tip_right[j])
-                            connection[tip_right[j]].append(tip_left[j])
-                            n_pairs.pop(j)
-                            # tip_left.pop(j)
-                            # tip_right.pop(j)
-                            # ks_value.pop(j)
-                            print "Here"
-                            break
-                        elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
-                            print "Elif",j
-                            tmp_tips.append(tip_right[j])
-                            tmp_ks.append(ks_value[j])
-                            connection[tip_left[j]].append(tip_right[j])
-                            connection[tip_right[j]].append(tip_left[j])
-                            n_pairs.pop(j)
-                            # tip_left.pop(j)
-                            # tip_right.pop(j)
-                            # ks_value.pop(j)
-                            break
-                        elif i == n_pairs[-1]:
-                            break
-                        else:
-                            print "Else",j
-                            continue
-                closed_cluster.append([tmp_tips,tmp_ks])
-            except:
-                closed_cluster.append([tmp_tips,tmp_ks])
-        elif tip_left[i] not in connection and tip_right[i] in connection:
-            connection_to_find = connection[tip_right[i]]
-            connection[tip_left[i]] = [tip_right[i]]
-            connection[tip_right[i]].append(tip_left[i])
-            tmp_tips = []
-            tmp_ks = []
-            tmp_tips.append(tip_left[i])
-            tmp_tips.append(tip_right[i])
-            tmp_ks.append(ks_value[i])
-            try:
-                for each_connection in connection_to_find:
-                    idx = n_pairs.index(i)
-                    for j in n_pairs[idx+1:]:
-                        if tip_left[j] == each_connection and tip_right[j] == tip_right[i]:
-                            tmp_tips.append(tip_left[j])
-                            tmp_ks.append(ks_value[j])
-                            connection[tip_left[j]].append(tip_right[j])
-                            connection[tip_right[j]].append(tip_left[j])
-                            n_pairs.pop(j)
-                            # tip_left.pop(j)
-                            # tip_right.pop(j)
-                            # ks_value.pop(j)
-                            break
-                        elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
-                            tmp_tips.append(tip_right[j])
-                            tmp_ks.append(ks_value[j])
-                            connection[tip_left[j]].append(tip_right[j])
-                            connection[tip_right[j]].append(tip_left[j])
-                            n_pairs.pop(j)
-                            # tip_left.pop(j)
-                            # tip_right.pop(j)
-                            # ks_value.pop(j)
-                            break
-                        else:
-                            continue
-                closed_cluster.append([tmp_tips,tmp_ks])
-            except:
-                closed_cluster.append([tmp_tips,tmp_ks])
-        else: # When both tips are in record, chances are that this could be the last one in the list
-            connection_to_find_right = connection[tip_right[i]]
-            connection_to_find_left = connection[tip_left[i]]
-            connection[tip_left[i]] = [tip_right[i]]
-            connection[tip_right[i]].append(tip_left[i])
-            tmp_tips = []
-            tmp_ks = []
-            tmp_tips.append(tip_left[i])
-            tmp_tips.append(tip_right[i])
-            tmp_ks.append(ks_value[i])
-            # If there are records behind
-            try:
-                for each_connection in connection_to_find:
-                    idx = n_pairs.index(i)
-                    for j in n_pairs[idx+1:]:
-                        if tip_left[j] == each_connection and tip_right[j] == tip_right[i]:
-                            tmp_tips.append(tip_left[j])
-                            tmp_ks.append(ks_value[j])
-                            connection[tip_left[j]].append(tip_right[j])
-                            connection[tip_right[j]].append(tip_left[j])
-                            n_pairs.pop(j)
-                            # tip_left.pop(j)
-                            # tip_right.pop(j)
-                            # ks_value.pop(j)
-                            break
-                        elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
-                            tmp_tips.append(tip_right[j])
-                            tmp_ks.append(ks_value[j])
-                            connection[tip_left[j]].append(tip_right[j])
-                            connection[tip_right[j]].append(tip_left[j])
-                            n_pairs.pop(j)
-                            # tip_left.pop(j)
-                            # tip_right.pop(j)
-                            # ks_value.pop(j)
-                            break
-                        else:
-                            continue
-                closed_cluster.append([tmp_tips,tmp_ks])
-            except:
-                closed_cluster.append([tmp_tips,tmp_ks])
+        print pool
+        if i not in pool:
+            if tip_left[i] not in connection and tip_right[i] not in connection:
+                print "Both not"
+                connection[tip_left[i]] = [tip_right[i]]
+                connection[tip_right[i]] = [tip_left[i]]
+                closed_cluster.append([tip_left[i],tip_right[i],ks_value[i]])
+            elif tip_left[i] in connection and tip_right[i] not in connection:
+                print "Left in, right not"
+                connection_to_find = connection[tip_left[i]]
+                connection[tip_right[i]]=[tip_left[i]]
+                connection[tip_left[i]].append(tip_right[i])
+                tmp_tips = []
+                tmp_ks = []
+                tmp_tips.append(tip_left[i])
+                tmp_tips.append(tip_right[i])
+                tmp_ks.append(ks_value[i])
+                try:
+                    for each_connection in connection_to_find:
+                        idx = n_pairs.index(i)
+                        for j in n_pairs[idx+1:]:
+                            if tip_left[j] == each_connection and tip_right[j] == tip_right[idx]:
+                                tmp_tips.append(tip_left[j])
+                                tmp_ks.append(ks_value[j])
+                                connection[tip_left[j]].append(tip_right[j])
+                                connection[tip_right[j]].append(tip_left[j])
+                                # n_pairs.pop(j)
+                                # tip_left.pop(j)
+                                # tip_right.pop(j)
+                                # ks_value.pop(j)
+                                pool.append(j)
+                                break
+                            elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
+                                tmp_tips.append(tip_right[j])
+                                tmp_ks.append(ks_value[j])
+                                connection[tip_left[j]].append(tip_right[j])
+                                connection[tip_right[j]].append(tip_left[j])
+                                #n_pairs.pop(j)
+                                # tip_left.pop(j)
+                                # tip_right.pop(j)
+                                # ks_value.pop(j)
+                                pool.append(j)
+                                break
+                            elif i == n_pairs[-1]:
+                                break
+                            else:
+                                continue
+                    closed_cluster.append([tmp_tips,tmp_ks])
+                except:
+                    closed_cluster.append([tmp_tips,tmp_ks])
+            elif tip_left[i] not in connection and tip_right[i] in connection:
+                print "Left not, right in"
+                connection_to_find = connection[tip_right[i]]
+                connection[tip_left[i]] = [tip_right[i]]
+                connection[tip_right[i]].append(tip_left[i])
+                tmp_tips = []
+                tmp_ks = []
+                tmp_tips.append(tip_left[i])
+                tmp_tips.append(tip_right[i])
+                tmp_ks.append(ks_value[i])
+                try:
+                    for each_connection in connection_to_find:
+                        idx = n_pairs.index(i)
+                        for j in n_pairs[idx+1:]:
+                            if tip_left[j]==tip_left[i] and tip_right[j]==each_connection:
+                                tmp_tips.append(tip_left[j])
+                                tmp_ks.append(ks_value[j])
+                                connection[tip_left[j]].append(tip_right[j])
+                                connection[tip_right[j]].append(tip_left[j])
+                                # n_pairs.pop(j)
+                                # tip_left.pop(j)
+                                # tip_right.pop(j)
+                                # ks_value.pop(j)
+                                pool.append(j)
+                                break
+                            elif tip_left[j]==each_connection and tip_right[j]==tip_left[i]:
+                                tmp_tips.append(tip_right[j])
+                                tmp_ks.append(ks_value[j])
+                                connection[tip_left[j]].append(tip_right[j])
+                                connection[tip_right[j]].append(tip_left[j])
+                                # n_pairs.pop(j)
+                                # tip_left.pop(j)
+                                # tip_right.pop(j)
+                                # ks_value.pop(j)
+                                pool.append(j)
+                                break
+                            else:
+                                continue
+                    closed_cluster.append([tmp_tips,tmp_ks])
+                except:
+                    closed_cluster.append([tmp_tips,tmp_ks])
+            else: # When both tips are in record, chances are that this could be the last one in the list
+                print "Both in"
+                connection_to_find_right = connection[tip_right[i]]
+                connection_to_find_left = connection[tip_left[i]]
+                connection[tip_left[i]] = [tip_right[i]]
+                connection[tip_right[i]].append(tip_left[i])
+                tmp_tips = []
+                tmp_ks = []
+                tmp_tips.append(tip_left[i])
+                tmp_tips.append(tip_right[i])
+                tmp_ks.append(ks_value[i])
+                # If there are records behind
+                try:
+                    for each_connection in connection_to_find:
+                        idx = n_pairs.index(i)
+                        for j in n_pairs[idx+1:]:
+                            if tip_left[j] == each_connection and tip_right[j] == tip_right[i]:
+                                tmp_tips.append(tip_left[j])
+                                tmp_ks.append(ks_value[j])
+                                connection[tip_left[j]].append(tip_right[j])
+                                connection[tip_right[j]].append(tip_left[j])
+                                # n_pairs.pop(j)
+                                # tip_left.pop(j)
+                                # tip_right.pop(j)
+                                # ks_value.pop(j)
+                                pool.append(j)
+                                break
+                            elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
+                                tmp_tips.append(tip_right[j])
+                                tmp_ks.append(ks_value[j])
+                                connection[tip_left[j]].append(tip_right[j])
+                                connection[tip_right[j]].append(tip_left[j])
+                                # n_pairs.pop(j)
+                                # tip_left.pop(j)
+                                # tip_right.pop(j)
+                                # ks_value.pop(j)
+                                pool.append(j)
+                                break
+                            else:
+                                continue
+                    closed_cluster.append([tmp_tips,tmp_ks])
+                except:
+                    closed_cluster.append([tmp_tips,tmp_ks])
+            print closed_cluster
+        else:
+            print "Skipping ",i
+            continue
     return connection, closed_cluster
 
 
