@@ -29,268 +29,98 @@ def loadcluster(df,seq_names):
         for j in tmp_idx:
             pairs.append([seq_names[i],seq_names[j],tmp.loc[j]])
     pairs = sorted(pairs,key=itemgetter(2))
-    return pairs
+    index = []
+    pairs_dict = {}
+    for i in pairs:
+        sort_key = i[:2]
+        sort_key.sort()
+        sort_key='-'.join(sort_key)
+        index.append(sort_key)
+        pairs_dict[sort_key]=i[2]
+    return index, pairs_dict
 
-def cluster_finder(pairs):
-    tip_left = [i[0] for i in pairs]
-    tip_right = [i[1] for i in pairs]
-    ks_value = [i[2] for i in pairs]
-    connection = {} # To store connections that have been iterated
-    closed_cluster = []
-    n_pairs = range(len(tip_right))
-    # for i in n_pairs:
-    #     print i
-    #     if tip_left[i] not in connection and tip_right[i] not in connection:
-    #         print "Both not in record."
-    #         connection[tip_left[i]] = [tip_right[i]]
-    #         connection[tip_right[i]] = [tip_left[i]]
-    #         closed_cluster.append([tip_left[i],tip_right[i],ks_value[i]])
-    #         print "Cluster ", tip_left[i], " ", tip_right[i], " recorded"
-    #     elif tip_left[i] not in connection and tip_right[i] in connection:
-    #         print "Left tip not recorded, right tip in record."
-    #         connection_to_find = connection[tip_right[i]]
-    #         connection[tip_left[i]] = [tip_right[i]]
-    #         connection[tip_right[i]].append(tip_left[i])
-    #         tmp = [tip_left[i],tip_right[i],ks_value]
-    #         n_connection_to_find = len(connection_to_find)-1
-    #         # Now we are looking for pairs of tip_left[i]-each_one_of_connection_to_find or each_one_of_connection_
-    #         # to_find-tip_left[i]
-    #         for each_connection in connection_to_find:
-    #             for j in n_pairs[i+1:]:
-    #                 if tip_left[j] == tip_left[i] and tip_right[j] == each_connection:
-    #                     tmp.append([tip_left[j],tip_right[j],ks_value[j]])
-    #                     connection[tip_left[j]].append(tip_right[j])
-    #                     connection[tip_right[j]].append(tip_left[j])
-    #                     tip_left.pop(j)
-    #                     tip_right.pop(j)
-    #                     ks_value.pop(j)
-    #                     n_connection_to_find = n_connection_to_find - 1
-    #                     break
-    #                 elif tip_right[j] == tip_left[i] and tip_left[j] == each_connection:
-    #                     tmp.append([tip_left[j],tip_right[j],ks_value[j]])
-    #                     connection[tip_left[j]].append(tip_right[j])
-    #                     connection[tip_right[j]].append(tip_left[j])
-    #                     n_connection_to_find = n_connection_to_find - 1
-    #                     tip_left.pop(j)
-    #                     tip_right.pop(j)
-    #                     ks_value.pop(j)
-    #                     break
-    #                 else:
-    #                     continue
-    #         closed_cluster.append(tmp)
-    #         print tmp
-    #     elif tip_left[i] in connection and tip_right[i] not in connection:
-    #         connection[tip_right[i]]=[tip_left[i]]
-    #         connection_to_find = connection[tip_left[i]]
-    #         connection[tip_left[i]].append(tip_right[i])
-    #         tmp = [tip_left[i],tip_right[i],ks_value[i]]
-    #         print tmp
-    #         n_connection_to_find = len(connection_to_find)-1
-    #         print n_connection_to_find
-    #         for each_connection in connection_to_find:
-    #             for j in n_pairs[i+1:]:
-    #                 if tip_left[j] == tip_left[i] and tip_right[j] == each_connection:
-    #                     tmp.append([tip_left[j],tip_right[j],ks_value[j]])
-    #                     connection[tip_left[j]].append(tip_right[j])
-    #                     connection[tip_right[j]].append(tip_left[j])
-    #                     n_connection_to_find = n_connection_to_find - 1
-    #                     tip_left.pop(j)
-    #                     tip_right.pop(j)
-    #                     ks_value.pop(j)
-    #                     break
-    #                 elif tip_right[j] == tip_left[i] and tip_left[j] == each_connection:
-    #                     tmp.append([tip_left[j],tip_right[j],ks_value[j]])
-    #                     connection[tip_left[j]].append(tip_right[j])
-    #                     connection[tip_right[j]].append(tip_left[j])
-    #                     n_connection_to_find = n_connection_to_find - 1
-    #                     tip_left.pop(j)
-    #                     tip_right.pop(j)
-    #                     ks_value.pop(j)
-    #                     break
-    #                 else:
-    #                     continue
-    #         closed_cluster.append(tmp)
-    #         print tmp
-    #     elif tip_left[i] in connection and tip_right[i] in connection:
-    #         print "Both in record"
-    #         connection_to_left_to_find = connection[tip_left[i]]
-    #         connection_to_right_to_find = connection[tip_right[i]]
-    #         connection[tip_left[i]].append(tip_right[i])
-    #         connection[tip_right[i]].append(tip_left[i])
-    #         tmp = [tip_left[i],tip_right[i],ks_value[i]]
-    #         n_connection_to_find = len(connection_to_left_to_find)*len(connection_to_right_to_find)-1
-    #         for each_connection_to_left in connection_to_left_to_find:
-    #             for each_connection_to_right in connection_to_right_to_find:
-    #                 for j in n_pairs[i+1:]:
-    #                     if tip_left[j] == each_connection_to_left and tip_right[j] == each_connection_to_right:
-    #                         tmp.append([tip_left[j],tip_right[j],ks_value[j]])
-    #                         connection[tip_left[j]].append(tip_right[j])
-    #                         connection[tip_right[j]].append(tip_left[j])
-    #                         n_connection_to_find = n_connection_to_find - 1
-    #                         tip_left.pop(j)
-    #                         tip_right.pop(j)
-    #                         ks_value.pop(j)
-    #                         break
-    #                     elif tip_right[j] == each_connection_to_right and tip_left[j] == each_connection_to_left:
-    #                         tmp.append([tip_left[j],tip_right[j],ks_value[j]])
-    #                         connection[tip_left[j]].append(tip_right[j])
-    #                         connection[tip_right[j]].append(tip_left[j])
-    #                         n_connection_to_find = n_connection_to_find - 1
-    #                         tip_left.pop(j)
-    #                         tip_right.pop(j)
-    #                         ks_value.pop(j)
-    #                         break
-    #                     else:
-    #                         continue
-    #         closed_cluster.append(tmp)
-    #         print tmp
-    pool = [] # To store those indices have been iterated and skip them
-    for i in n_pairs:
-        print i
-        print pool
-        if i not in pool:
-            if tip_left[i] not in connection and tip_right[i] not in connection:
-                print "Both not"
-                connection[tip_left[i]] = [tip_right[i]]
-                connection[tip_right[i]] = [tip_left[i]]
-                closed_cluster.append([tip_left[i],tip_right[i],ks_value[i]])
-            elif tip_left[i] in connection and tip_right[i] not in connection:
-                print "Left in, right not"
-                connection_to_find = connection[tip_left[i]]
-                connection[tip_right[i]]=[tip_left[i]]
-                connection[tip_left[i]].append(tip_right[i])
-                tmp_tips = []
-                tmp_ks = []
-                tmp_tips.append(tip_left[i])
-                tmp_tips.append(tip_right[i])
-                tmp_ks.append(ks_value[i])
+def cluster_finder(index, pairs_dict):
+    tax_cluster = {}
+    cluster_tax = {}
+    cluster_ks = {}
+
+    def get_biggest_cluster(node):
+        cluster_list = tax_cluster[node]
+        cluster_size = [len(cluster_tax[each]) for each in cluster_list]
+        cluster_size_w_idx = [[size,idx] for idx,size in enumerate(cluster_size)]
+        cluster_size_w_idx.sort()
+        idx_biggest_cluster = cluster_size_w_idx[-1][1]
+        biggest_cluster = cluster_list[idx_biggest_cluster]
+        components_of_biggest_cluster = cluster_tax[biggest_cluster]
+        return components_of_biggest_cluster
+
+    for i in index:
+        left = i.split('-')[0]
+        right = i.split('-')[1]
+        if left not in tax_cluster and right not in tax_cluster:
+            NewCluster = 'Cluster'+str(len(cluster_tax.keys())+1) #Create a new cluster label
+            tax_cluster[left] = [NewCluster] # Create a key for this taxa with the new cluster
+            tax_cluster[right] = [NewCluster]
+            cluster_tax[NewCluster] = [left,right] # Add components to this new cluster
+            cluster_ks[NewCluster] = [pairs_dict[i]] # And the kS value of this pair
+        elif left not in tax_cluster and right in tax_cluster: # If one of the node is not in the record, starts with left missing
+            components_of_biggest_cluster = get_biggest_cluster(right)
+            NewCluster = 'Cluster'+str(len(cluster_tax.keys())+1) # Create a new cluster label for later
+            tax_cluster[left] = [NewCluster] # Add a new record for the missing left node
+            cluster_tax[NewCluster] = components_of_biggest_cluster+[left] # For the new cluster, add all nodes including the new left node
+            cluster_ks[NewCluster]=[] # Create a new key for kS values of this cluster
+            for j in components_of_biggest_cluster: # For each components
+                tax_cluster[j].append(NewCluster) # First add the newly created cluster to their record
+                tmp_pair = [j,left] # Combine the two nodes
+                tmp_pair.sort() # Sort them
+                tmp_pair = '-'.join(tmp_pair) # Make them the format as can be searched from paris_dict
                 try:
-                    for each_connection in connection_to_find:
-                        idx = n_pairs.index(i)
-                        for j in n_pairs[idx+1:]:
-                            if tip_left[j] == each_connection and tip_right[j] == tip_right[idx]:
-                                tmp_tips.append(tip_left[j])
-                                tmp_ks.append(ks_value[j])
-                                connection[tip_left[j]].append(tip_right[j])
-                                connection[tip_right[j]].append(tip_left[j])
-                                # n_pairs.pop(j)
-                                # tip_left.pop(j)
-                                # tip_right.pop(j)
-                                # ks_value.pop(j)
-                                pool.append(j)
-                                break
-                            elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
-                                tmp_tips.append(tip_right[j])
-                                tmp_ks.append(ks_value[j])
-                                connection[tip_left[j]].append(tip_right[j])
-                                connection[tip_right[j]].append(tip_left[j])
-                                #n_pairs.pop(j)
-                                # tip_left.pop(j)
-                                # tip_right.pop(j)
-                                # ks_value.pop(j)
-                                pool.append(j)
-                                break
-                            elif i == n_pairs[-1]:
-                                break
-                            else:
-                                continue
-                    closed_cluster.append([tmp_tips,tmp_ks])
+                    cluster_ks[NewCluster].append(pairs_dict[tmp_pair]) # Add the kS value
                 except:
-                    closed_cluster.append([tmp_tips,tmp_ks])
-            elif tip_left[i] not in connection and tip_right[i] in connection:
-                print "Left not, right in"
-                connection_to_find = connection[tip_right[i]]
-                connection[tip_left[i]] = [tip_right[i]]
-                connection[tip_right[i]].append(tip_left[i])
-                tmp_tips = []
-                tmp_ks = []
-                tmp_tips.append(tip_left[i])
-                tmp_tips.append(tip_right[i])
-                tmp_ks.append(ks_value[i])
+                    continue
+        elif left in tax_cluster and right not in tax_cluster:
+            # Similar case as above condition, only now the right node is not in record
+            components_of_biggest_cluster = get_biggest_cluster(left)
+            NewCluster = 'Cluster'+str(len(cluster_tax.keys())+1)
+            tax_cluster[right] = [NewCluster]
+            cluster_tax[NewCluster] = components_of_biggest_cluster+[right]
+            cluster_ks[NewCluster] = []
+            for j in components_of_biggest_cluster:
+                tax_cluster[j].append(NewCluster)
+                tmp_pair = [j,right]
+                tmp_pair.sort()
+                tmp_pair = '-'.join(tmp_pair)
                 try:
-                    for each_connection in connection_to_find:
-                        idx = n_pairs.index(i)
-                        for j in n_pairs[idx+1:]:
-                            if tip_left[j]==tip_left[i] and tip_right[j]==each_connection:
-                                tmp_tips.append(tip_left[j])
-                                tmp_ks.append(ks_value[j])
-                                connection[tip_left[j]].append(tip_right[j])
-                                connection[tip_right[j]].append(tip_left[j])
-                                # n_pairs.pop(j)
-                                # tip_left.pop(j)
-                                # tip_right.pop(j)
-                                # ks_value.pop(j)
-                                pool.append(j)
-                                break
-                            elif tip_left[j]==each_connection and tip_right[j]==tip_left[i]:
-                                tmp_tips.append(tip_right[j])
-                                tmp_ks.append(ks_value[j])
-                                connection[tip_left[j]].append(tip_right[j])
-                                connection[tip_right[j]].append(tip_left[j])
-                                # n_pairs.pop(j)
-                                # tip_left.pop(j)
-                                # tip_right.pop(j)
-                                # ks_value.pop(j)
-                                pool.append(j)
-                                break
-                            else:
-                                continue
-                    closed_cluster.append([tmp_tips,tmp_ks])
+                    cluster_ks[NewCluster].append(pairs_dict[tmp_pair])
                 except:
-                    closed_cluster.append([tmp_tips,tmp_ks])
-            else: # When both tips are in record, chances are that this could be the last one in the list
-                print "Both in"
-                connection_to_find_right = connection[tip_right[i]]
-                connection_to_find_left = connection[tip_left[i]]
-                connection[tip_left[i]] = [tip_right[i]]
-                connection[tip_right[i]].append(tip_left[i])
-                tmp_tips = []
-                tmp_ks = []
-                tmp_tips.append(tip_left[i])
-                tmp_tips.append(tip_right[i])
-                tmp_ks.append(ks_value[i])
-                # If there are records behind
-                try:
-                    for each_connection in connection_to_find:
-                        idx = n_pairs.index(i)
-                        for j in n_pairs[idx+1:]:
-                            if tip_left[j] == each_connection and tip_right[j] == tip_right[i]:
-                                tmp_tips.append(tip_left[j])
-                                tmp_ks.append(ks_value[j])
-                                connection[tip_left[j]].append(tip_right[j])
-                                connection[tip_right[j]].append(tip_left[j])
-                                # n_pairs.pop(j)
-                                # tip_left.pop(j)
-                                # tip_right.pop(j)
-                                # ks_value.pop(j)
-                                pool.append(j)
-                                break
-                            elif tip_left[j]==tip_right[i] and tip_right[j]==each_connection:
-                                tmp_tips.append(tip_right[j])
-                                tmp_ks.append(ks_value[j])
-                                connection[tip_left[j]].append(tip_right[j])
-                                connection[tip_right[j]].append(tip_left[j])
-                                # n_pairs.pop(j)
-                                # tip_left.pop(j)
-                                # tip_right.pop(j)
-                                # ks_value.pop(j)
-                                pool.append(j)
-                                break
-                            else:
-                                continue
-                    closed_cluster.append([tmp_tips,tmp_ks])
-                except:
-                    closed_cluster.append([tmp_tips,tmp_ks])
-            print closed_cluster
-        else:
-            print "Skipping ",i
-            continue
-    return connection, closed_cluster
-
-
-
-
-
+                    continue
+        else: ### left in tax_cluster and right in tax_cluster:
+            # For this condition, both nodes are already recorded
+            # But there are still two scenarios
+            # One is that the relationship of the two biggest clusters corresponding to them are the same cluster, do nothing
+            components_of_biggest_cluster_left = get_biggest_cluster(left)
+            components_of_biggest_cluster_right = get_biggest_cluster(right)
+            if components_of_biggest_cluster_left == components_of_biggest_cluster_right:
+                continue
+            else:
+                NewCluster = 'Cluster'+str(len(cluster_tax.keys())+1)
+                tax_cluster[left].append(NewCluster)
+                tax_cluster[right].append(NewCluster)
+                cluster_tax[NewCluster] = components_of_biggest_cluster_left + components_of_biggest_cluster_right
+                cluster_ks[NewCluster] = []
+                for each_right in components_of_biggest_cluster_right:
+                    tax_cluster[each_right].append(NewCluster)
+                for each_left in components_of_biggest_cluster_left:
+                    tax_cluster[each_left].append(NewCluster)
+                    for each_right in components_of_biggest_cluster_right:
+                        tmp_pair = [each_left,each_right]
+                        tmp_pair.sort()
+                        tmp_pair = '-'.join(tmp_pair)
+                        try:
+                            cluster_ks[NewCluster].append(pairs_dict[tmp_pair])
+                        except:
+                            continue
+    return tax_cluster, cluster_tax, cluster_ks
 
 def correct_ks():
     yn00 = pycodeml.perform_codeml()
@@ -305,32 +135,18 @@ def correct_ks():
         dS_df[seq_names[i]] = dS_targets
     # dS_df.index=seq_names
     dS_df_filtered = dS_df[dS_df<5][dS_df>0]
-    clusters = loadcluster(dS_df_filtered,seq_names)
+    index, pairs_dict = loadcluster(dS_df_filtered,seq_names)
+    tax_cluster, cluster_tax, cluster_ks = cluster_finder(index,pairs_dict)
+    cluster_keys = cluster_ks.keys()
+    ks_per_cluster = {}
+    for i in cluster_keys:
+        ks_per_cluster[i] = sum(cluster_ks[i])/len(cluster_ks[i])
+    cluster_summary = {}
+    for i in cluster_keys:
+        cluster_summary[i] = [cluster_tax[i],ks_per_cluster[i]]
+    return cluster_summary
 
 
-
-
-
-
-
-
-
-
-    average_ks_per_cluster = []
-    for i in range(len(clusters.keys())):
-        tmp = [i[2] for i in clusters[clusters.keys()[i]]]
-        average_ks_per_cluster.append(sum(tmp)/len(tmp))
-    # Sort clusters by clade sizes
-    cluster_size = [len(clusters[i])+1 for i in clusters.keys()]
-    cluster_size_idx = [[j,i] for i,j in enumerate(cluster_size)]
-    cluster_size_idx.sort()
-    kS={}
-    for i in range(len(cluster_size_idx)):
-        idx = cluster_size_idx[i][1]
-        avg_ks = average_ks_per_cluster[cluster_size_idx[i][1]]
-        components = [j[0] for j in clusters[clusters.keys()[idx]]]+[clusters.keys()[idx]]
-        kS['cluster'+str(i+1)] = [avg_ks,components]
-    return kS
 
 
 
