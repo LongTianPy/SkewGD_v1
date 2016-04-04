@@ -4,7 +4,7 @@ This script take the result of CODEML as input
 """
 
 ### IMPORT
-import pycodeml
+import pycodeml #For importing CODEML result, will not use this once we wrap the pipeline as a whole
 import pandas as pd
 from operator import itemgetter
 
