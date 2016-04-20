@@ -28,3 +28,4 @@ def find_synonymous(input_file, work_dir):
     cl = YnCommandline(ctl_file)
     print >>sys.stderr, "\tyn00:", cl
     r, e = cl.run()
+    return r
