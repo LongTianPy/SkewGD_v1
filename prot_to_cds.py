@@ -132,30 +132,44 @@ def alignment_back_translate(protein_alignment, nucleotide_records, key_function
     return MultipleSeqAlignment(aligned)
 
 
-if len(sys.argv) == 4:
-    align_format, prot_align_file, nuc_fasta_file = sys.argv[1:]
-    nuc_align_file = sys.stdout
-    table = 0
-elif len(sys.argv) == 5:
-    align_format, prot_align_file, nuc_fasta_file, nuc_align_file = sys.argv[1:]
-    table = 0
-elif len(sys.argv) == 6:
-    align_format, prot_align_file, nuc_fasta_file, nuc_align_file, table = sys.argv[1:]
-else:
-    sys_exit("""
+# if len(sys.argv) == 4:
+#     align_format, prot_align_file, nuc_fasta_file = sys.argv[1:]
+#     nuc_align_file = sys.stdout
+#     table = 0
+# elif len(sys.argv) == 5:
+#     align_format, prot_align_file, nuc_fasta_file, nuc_align_file = sys.argv[1:]
+#     table = 0
+# elif len(sys.argv) == 6:
+#     align_format, prot_align_file, nuc_fasta_file, nuc_align_file, table = sys.argv[1:]
+# else:
+#     sys_exit("""
+#
+# Example usage:
+#
+# $ python prot_to_cds.py fasta prot_cluster_file.fasta nucleotide_file.fasta output_file.fasta
+#
+# """)
+#
+# try:
+#     table = int(table)
+# except:
+#     sys_exit("Bad table argument %r" % table)
+#
+# prot_align = AlignIO.read(prot_align_file, align_format, alphabet=generic_protein)
+# nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
+# nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=table)
+# AlignIO.write(nuc_align, nuc_align_file, align_format)
 
-Example usage:
+def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
+    """
+    Put the above functions together
+    :param prot_align_file: clusters
+    :param nuc_fasta_file: whole cds file
+    :param nuc_align_file: output
+    :return: physical output file
+    """
+    prot_align = AlignIO.read(prot_align_file,"fasta",alphabet=generic_protein)
+    nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
+    nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
+    AlignIO.write(nuc_align,nuc_align_file,"fasta")
 
-$ python prot_to_cds.py fasta prot_cluster_file.fasta nucleotide_file.fasta output_file.fasta
-
-""")
-
-try:
-    table = int(table)
-except:
-    sys_exit("Bad table argument %r" % table)
-
-prot_align = AlignIO.read(prot_align_file, align_format, alphabet=generic_protein)
-nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
-nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=table)
-AlignIO.write(nuc_align, nuc_align_file, align_format)

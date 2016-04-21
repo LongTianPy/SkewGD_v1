@@ -4,9 +4,15 @@ This script take the result of CODEML as input
 """
 
 ### IMPORT
-import pycodeml #For importing CODEML result, will not use this once we wrap the pipeline as a whole
 import pandas as pd
 from operator import itemgetter
+import sys
+try:
+    import seaborn
+except:
+    print "Please install Python module seaborn. "
+    sys.exit()
+import matplotlib.pyplot as plt
 
 ### FUNCTIONS
 def loadcluster(df,seq_names):
@@ -122,8 +128,7 @@ def cluster_finder(index, pairs_dict):
                             continue
     return tax_cluster, cluster_tax, cluster_ks
 
-def correct_ks():
-    yn00 = pycodeml.perform_codeml()
+def correct_ks(yn00):
     seq_names = yn00.keys()
     seq_names.sort()
     dS_df = pd.DataFrame()
@@ -144,8 +149,16 @@ def correct_ks():
     cluster_summary = {}
     for i in cluster_keys:
         cluster_summary[i] = [cluster_tax[i],ks_per_cluster[i]]
-    return cluster_summary
+    ks_df = pd.DataFrame()
+    ks_df['kS_values'] = ks_per_cluster.values()
+    return ks_df
 
+def draw_histo(ks_df):
+    size = len(ks_df)
+    ax = seaborn.distplot(a=ks_df["kS_values"], kde_kws={"color":"red"}, axlabel=False,bins=int(size/2))
+    ax.set(xlabel="kS", ylabel= "Frequency", title="kS distribution")
+    plt.savefig("ks_distribution.pdf",format="pdf")
+    plt.clf()
 
 
 
