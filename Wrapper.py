@@ -48,7 +48,7 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
     mcl_out = protein_cds+".mcl_out"
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
-    cluster_file_list = [join(working_dir,) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
+    cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     pool_size = 8
     pool = mp.Pool(processes=pool_size)
     pool.map(run_muscle.muscle, cluster_file_list)
@@ -85,7 +85,8 @@ def main(argv=None):
     identity = args.identity
     coverage = args.coverage
     cluster_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
-
+    for i in cluster_file_list:
+        run = Andrew_wrapper()
 
 
 
