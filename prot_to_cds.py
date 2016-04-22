@@ -172,4 +172,5 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
     nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
     AlignIO.write(nuc_align,nuc_align_file,"fasta")
+    nuc_dict.close()
 

@@ -4,11 +4,45 @@
 
 # IMPORT
 # BUILT-IN MODULES
-import optparse
+import argparse
 # SCRIPTS
 import prot_to_cds
 import run_paml_yn00
 import ks_correction
+import convert1
+import process_blast
+import process_cluster_all
+
+# FUNCTIONS
+
+# Arguments
+def get_parsed_args():
+    """
+    Parse the command line arguments
+    Parses command line arguments using the argparse package, which is a
+    standard Python module starting with version 2.7.
+    :return:
+        args: An argparse.Namespace object containing all parsed the arguments
+    """
+    parser = argparse.ArgumentParser(
+        description="Generate kS distrbution histogram to detect Whole Genome Duplication (WGD) events. "+
+                    "Taking the full coding sequences of an organism as input.")
+    parser.add_argument("-i", dest=nucleotide_cds, help="Full coding sequences of the organism of interest.")
+    parser.add_argument("-o", dest=outout_pref, help="Prefix for the MCL clustered files.")
+    parser.add_argument("-d", dest=working_dir, default="./", help="Working directory to store intermediate files of each step. Default: ./ .")
+    parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in BLAST result. Default: 50 .")
+    parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment coverage in BLAST result. Default: 30 .")
+
+    args = parser.parse_args()
+    return args
+
+# Individual wrappers
+def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage):
+    protein_cds = nucleotide_cds+".protein"
+    convert1.convert(nucleotide_cds,protein_cds)
+    process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
+    mcl_out = protein_cds+".mcl_out"
+    process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix)
 
 def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     """
@@ -25,6 +59,24 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
 def Long_wrapper(yn00_obj):
     ks_df = ks_correction.correct_ks(yn00=yn00_obj)
     ks_correction.draw_histo(ks_df=ks_df)
+
+# MAIN
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    args = get_parsed_args()
+    working_dir = args.working_dirz
+    nucleotide_cds = args.nucleotide_cds
+    out_prefix = args.output_pref
+    identity = args.identity
+    coverage = args.coverage
+    Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix)
+    clusterfilelist =
+
+
+
+
+if __name__ == "__main__":
 
 
 
