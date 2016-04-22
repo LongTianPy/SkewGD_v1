@@ -1,6 +1,6 @@
 from Bio import SeqIO
 
-def process_cluster(mcl_out,protein_cds,output_prefix):
+def process_cluster(mcl_out,protein_cds,output_prefix,working_dir):
     myfile=open(mcl_out,'r') #all.TAIR10protein.cluster.txt, 7496 clusters
     cluster={}
     line_count=1;
@@ -27,12 +27,20 @@ def process_cluster(mcl_out,protein_cds,output_prefix):
     #num=random.sample(range(1,7496),750)
     #with open('random_list', 'wb') as f:
     #    pickle.dump(num, f)
+    current_dir = os.getcwd()
+    try:
+        os.chdir(working_dir)
+    except:
+        os.mkdir(working_dir)
+        os.chdir(working_dir)
     for i in cluster:
         # output=open(output_prefix+str(i)+'.txt','w') #f = open("file_"+str(i)+".dat","w")
         ids=cluster[i].split("\t")
         cluster_records = [proteins_dict[j] for j in ids]
         with open(output_prefix+str(i)+'.txt','w') as output:
-            SeqIO.write(cluster_records,output)
+            SeqIO.write(cluster_records,output,"fasta")
     proteins_dict.close()
+    os.chdir(current_dir)
+
 
 

@@ -31,14 +31,14 @@ def process_blast(protein_cds,identiy,coverage):
         value=doc[i].split("\n")
         if len(value)>1: #compare identity pick the highest on
             ident_list=[]
-        for j in value:
-            ident=j.split('\t')[0]
-            ident_list.append(ident)
-            index=ident_list.index(max(ident_list))
-            new_value=value[index]
-            doc[i]=new_value
-    iden_thre=identiy;
-    cov_thre=coverage;
+            for j in value:
+                ident=j.split('\t')[0]
+                ident_list.append(ident)
+                index=ident_list.index(max(ident_list))
+                new_value=value[index]
+                doc[i]=new_value
+    iden_thre=identiy
+    cov_thre=coverage
     output=open(blast_processed,'w')
     for i in doc:
         doc_split=doc[i].split('\t')
@@ -50,4 +50,4 @@ def process_blast(protein_cds,identiy,coverage):
     myfile.close()
     #Clustering using mcl
     #Step 4: Clustering
-    os.system("./mcl {0} --abc -o {1}".format(blast_processed, mcl_out))
+    os.system("mcl {0} --abc -o {1}".format(blast_processed, mcl_out))
