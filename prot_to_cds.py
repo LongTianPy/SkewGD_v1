@@ -20,7 +20,7 @@ def sys_exit(msg, error_level=1):
 def check_trans(identifier, nuc, prot, table):
     """Returns nucleotide sequence if works (can remove trailing stop)"""
     if len(nuc) % 3:
-        sys_exit("Nucleotide sequence for %s is length %i (not a multiple of three)"
+        print("Nucleotide sequence for %s is length %i (not a multiple of three)"
                  % (identifier, len(nuc)))
 
     p = str(prot).upper().replace("*", "X")
@@ -43,7 +43,7 @@ def check_trans(identifier, nuc, prot, table):
             err += "\nHowever, protein sequence found within translated nucleotides."
         elif p[1:] in t:
             err += "\nHowever, ignoring first amino acid, protein sequence found within translated nucleotides."
-        sys_exit(err)
+        print(err)
 
 
     if t == p:
@@ -53,7 +53,7 @@ def check_trans(identifier, nuc, prot, table):
         if str(nuc[0:3]).upper() in ambiguous_generic_by_id[table].start_codons:
             return nuc
         else:
-            sys_exit("Translation check failed for %s\n"
+            print("Translation check failed for %s\n"
                      "Would match if %s was a start codon (check correct table used)\n"
                      % (identifier, nuc[0:3].upper()))
     else:
@@ -68,7 +68,7 @@ def check_trans(identifier, nuc, prot, table):
                 sys.stderr.write("Protein:     %s\n" % p[offset:offset+60])
                 sys.stderr.write("             %s\n" % m[offset:offset+60])
                 sys.stderr.write("Translation: %s\n\n" % t[offset:offset+60])
-        sys_exit("Translation check failed for %s\n" % identifier)
+        print("Translation check failed for %s\n" % identifier)
 
 def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record, gap, table=0):
     
@@ -89,7 +89,7 @@ def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record,
     if table:
         ungapped_nucleotide = check_trans(aligned_protein_record.id, ungapped_nucleotide, ungapped_protein, table)
     elif len(ungapped_protein) * 3 != len(ungapped_nucleotide):
-        sys_exit("Inconsistent lengths for %s, ungapped protein %i, "
+        print("Inconsistent lengths for %s, ungapped protein %i, "
                  "tripled %i vs ungapped nucleotide %i" %
                  (aligned_protein_record.id,
                   len(ungapped_protein),

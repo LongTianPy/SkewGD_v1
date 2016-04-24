@@ -1,4 +1,5 @@
 from Bio import SeqIO
+import os
 
 def process_cluster(mcl_out,protein_cds,output_prefix,working_dir):
     myfile=open(mcl_out,'r') #all.TAIR10protein.cluster.txt, 7496 clusters

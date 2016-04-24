@@ -10,10 +10,9 @@ import sys
 def perform_codeml():
     yn = yn00.Yn00()
     yn.alignment = "TF105351.Eut.3.phy"
-    yn.tree = "TF105351.Eut.3.53876.tree"
     yn.out_file = "yn_result.out"
     yn.working_dir = "./"
-    yn.read_ctl_file = "TF105351.Eut.3.53876.ctl"
+    yn.print_options()
     run = yn.run(command="/Users/longtian/Desktop/paml4.8/bin/yn00")
     return run
 
