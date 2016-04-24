@@ -13,7 +13,7 @@ def run_yn00(input_phy):
     yn.alignment = input_phy
     yn.out_file = input_phy+".out"
     yn.working_dir = "./"
-    yn.set_options(commonf3x4 = 0)
+    yn.set_options(commonf3x4 = 1)
     yn.print_options()
-    run_result = yn.run(command=binary)
+    run_result = yn.run(command=binary,verbose=True)
     return run_result

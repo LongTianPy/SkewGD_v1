@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import re
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna, generic_protein
 from Bio.Align import MultipleSeqAlignment
@@ -109,9 +110,27 @@ def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record,
 
     aligned_nuc = unaligned_nucleotide_record[:] 
     aligned_nuc.letter_annotation = {} 
-    aligned_nuc.seq = Seq("".join(seq), alpha) 
+    aligned_nuc.seq = Seq("".join(seq), generic_dna)
     assert len(aligned_protein_record.seq) * 3 == len(aligned_nuc)
     return aligned_nuc
+
+def back_translate(protein_alignment, nucleotide_dict):
+    back_translated_records = []
+    for protein in protein_alignment:
+        print str(protein.seq)
+        print str(nucleotide_dict[protein.id].seq)
+        triplets = re.findall('...', str(nucleotide_dict[protein.id].seq))
+        print len(triplets)
+        aa_pattern = re.compile(r"[A-Z]")
+        aa_index = [m.start(0) for m in re.finditer(aa_pattern, str(protein.seq))]
+        print aa_index
+        print len(aa_index)
+        #nucleotide_seq = [triplets[aa_idx] for aa_idx in aa_index]
+        #nucleotide_seq = ''.join(nucleotide_seq)
+        #back_translated_records.append(SeqIO.SeqRecord(Seq(nucleotide_seq,alphabet=generic_dna),id=protein.id))
+    return back_translated_records
+
+
 
 def alignment_back_translate(protein_alignment, nucleotide_records, key_function=None, gap=None, table=0):
     """Thread nucleotide sequences onto a protein alignment."""
@@ -170,7 +189,10 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     """
     prot_align = AlignIO.read(prot_align_file,"fasta",alphabet=generic_protein)
     nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
+    #nuc_align = [nuc_dict[i.id] for i in prot_align]
     nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
-    AlignIO.write(nuc_align,nuc_align_file,"fasta")
+    #nuc_align = back_translate(prot_align, nuc_dict)
+    f = open(nuc_align_file,"w")
+    AlignIO.write(nuc_align,f,"phylip-sequential")
     nuc_dict.close()
 

@@ -63,7 +63,10 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     """
     prot_to_cds_out = prot_cluster_file+".phy"
     prot_to_cds.write_align(prot_align_file=prot_cluster_file, nuc_fasta_file=nucleotide_file, nuc_align_file=prot_to_cds_out)
-    run = run_paml_yn00.run_yn00(prot_to_cds_out)
+    prot_to_cds_out_sub = prot_to_cds_out+"_sub" # Subtitute dot to 2 spaces
+    pattern = "s/\./  /g"
+    cmd = "sed {0} {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
+    run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
     return run
 
 def Long_wrapper(yn00_obj):
