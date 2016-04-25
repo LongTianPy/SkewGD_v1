@@ -70,7 +70,7 @@ def get_parsed_args():
         description="Generate kS distrbution histogram to detect Whole Genome Duplication (WGD) events. "+
                     "Taking the full coding sequences of an organism as input.")
     parser.add_argument("-i", dest='nucleotide_cds', help="Full coding sequences of the organism of interest.")
-    parser.add_argument("-o", dest='outout_pref', help="Prefix for the MCL clustered files.")
+    parser.add_argument("-o", dest='output_pref', help="Prefix for the MCL clustered files.")
     parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of each step. Default: ./ .")
     parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in BLAST result. Default: 50 .")
     parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment coverage in BLAST result. Default: 30 .")
