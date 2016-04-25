@@ -88,7 +88,7 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     print "Translating CDS to proteins...\n"
     convert1.convert(nucleotide_cds)
     print "Self-blasting, this may take long...\n"
-    process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
+    process_blast.run_blast(protein_cds=protein_cds,identity=identity,coverage=coverage)
     mcl_out = protein_cds+".mcl_out"
     print "Matching clusters..."
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
