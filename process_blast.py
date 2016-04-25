@@ -37,7 +37,7 @@ def process_blast(protein_cds,identity,coverage):
                 index=ident_list.index(max(ident_list))
                 new_value=value[index]
                 doc[i]=new_value
-    iden_thre=identiy
+    iden_thre=identity
     cov_thre=coverage
     output=open(blast_processed,'w')
     for i in doc:
