@@ -95,11 +95,11 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     print "Matching clusters..."
     #process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
-    #pool_size = 8
-    #pool = mp.Pool(processes=pool_size)
+    pool_size = 8
+    pool = mp.Pool(processes=pool_size)
     print "Aligning proteins with MUSCLE, this may take long..."
-    #pool.map(run_muscle.muscle, cluster_file_list)
-    #pool.close()
+    pool.map(run_muscle.muscle, cluster_file_list)
+    pool.close()
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     return afa_file_list
 
