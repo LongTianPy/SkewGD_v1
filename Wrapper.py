@@ -109,19 +109,13 @@ def main(argv=None):
             kS_df_total = kS_df_total.append(ks_df)
         except:
             continue
-
-
-
-
-
-
     # Draw histogram
     ks_correction.draw_histo(kS_df_total)
 
 
 
-#if __name__ == "__main__":
-
+if __name__ == "__main__":
+    main()
 
 
 
