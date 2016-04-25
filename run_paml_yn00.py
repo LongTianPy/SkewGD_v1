@@ -14,6 +14,5 @@ def run_yn00(input_phy):
     yn.out_file = input_phy+".out"
     yn.working_dir = "./"
     yn.set_options(commonf3x4 = 1)
-    yn.print_options()
-    run_result = yn.run(command=binary,verbose=True)
+    run_result = yn.run(command=binary,verbose=False)
     return run_result

@@ -9,6 +9,8 @@ import os
 from os import listdir
 from os.path import isfile, join
 import multiprocessing as mp
+import pandas as pd
+from Bio import SeqIO
 # SCRIPTS
 import prot_to_cds
 import run_paml_yn00
@@ -44,15 +46,17 @@ def get_parsed_args():
 # Individual wrappers
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     protein_cds = nucleotide_cds+".protein"
-    convert1.convert(nucleotide_cds,protein_cds)
-    process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
+    convert1.convert(nucleotide_cds)
+    # process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
     mcl_out = protein_cds+".mcl_out"
-    process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
+    # process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     pool_size = 8
     pool = mp.Pool(processes=pool_size)
     pool.map(run_muscle.muscle, cluster_file_list)
-    return cluster_file_list
+    pool.close()
+    afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
+    return afa_file_list
 
 def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     """
@@ -64,8 +68,9 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     prot_to_cds_out = prot_cluster_file+".phy"
     prot_to_cds.write_align(prot_align_file=prot_cluster_file, nuc_fasta_file=nucleotide_file, nuc_align_file=prot_to_cds_out)
     prot_to_cds_out_sub = prot_to_cds_out+"_sub" # Subtitute dot to 2 spaces
-    pattern = "s/\./  /g"
-    cmd = "sed {0} {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
+    pattern = 's/\./  /g'
+    cmd = "sed '{0}' {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
+    os.system(cmd)
     run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
     return run
 
@@ -87,11 +92,31 @@ def main(argv=None):
     out_prefix = args.output_pref
     identity = args.identity
     coverage = args.coverage
-    cluster_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
-    for i in cluster_file_list:
-        run = Andrew_wrapper()
+    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
+    kS_df_total = pd.DataFrame()
+    myfile=open(nucleotide_cds,'r')
+    records = list(SeqIO.parse(myfile,"fasta"))
+    myfile.close()
+    for record in records:
+        record.seq = record.seq[:-3]
+    nucleotide_cds_trunc = nucleotide_cds+'_trunc'
+    with open(nucleotide_cds_trunc,"w") as f:
+        SeqIO.write(records,f,"fasta")
+for afa_file in afa_file_list:
+    try:
+        run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
+        ks_df = ks_correction.correct_ks(run)
+        kS_df_total = kS_df_total.append(ks_df)
+    except:
+        continue
 
 
+
+
+
+
+    # Draw histogram
+    ks_correction.draw_histo(kS_df_total)
 
 
 

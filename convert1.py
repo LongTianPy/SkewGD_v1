@@ -33,11 +33,11 @@ def convert(nucleotide_cds):
         #print i, doc[i]['sequence']
     for i in records:
         i.seq = i.seq.translate()
-        i.seq = i.seq[:-1]+'X'
+        i.seq = i.seq[:-1]
     with open(protein_out,'w') as outfile:
         SeqIO.write(records,outfile,'fasta')
     outfile.close()
-    print records[0].seq
+
 
 
 

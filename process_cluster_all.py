@@ -39,7 +39,7 @@ def process_cluster(mcl_out,protein_cds,output_prefix,working_dir):
         ids=cluster[i].split("\t")
         cluster_records = [proteins_dict[j] for j in ids]
         with open(output_prefix+str(i)+'.txt','w') as output:
-            SeqIO.write(cluster_records,output,"phylip-sequential")
+            SeqIO.write(cluster_records,output,"fasta")
     proteins_dict.close()
     os.chdir(current_dir)
 
