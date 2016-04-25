@@ -12,7 +12,7 @@ def run_blast(protein_cds):
 
 #Process blast output
 
-def process_blast(protein_cds,identiy,coverage):
+def process_blast(protein_cds,identity,coverage):
     blast_out = protein_cds+'.blast_out'
     blast_processed = protein_cds+'.blast_processed'
     mcl_out = protein_cds+'.mcl_out'
