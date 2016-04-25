@@ -55,6 +55,7 @@ def main(argv=None):
             ks_df = ks_correction.correct_ks(run)
             kS_df_total = kS_df_total.append(ks_df)
         except:
+            print "Error in " + afa_file + ", skipped."
             continue
     # Draw histogram
     print "Correcting kS...\n"
@@ -86,18 +87,18 @@ def get_parsed_args():
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     protein_cds = nucleotide_cds+".protein"
     print "Translating CDS to proteins...\n"
-    # convert1.convert(nucleotide_cds)
+    convert1.convert(nucleotide_cds)
     print "Self-blasting, this may take long...\n"
     # process_blast.run_blast(protein_cds=protein_cds)
     mcl_out = protein_cds+".mcl_out"
     print "Clustering..."
-    # process_blast.process_blast_out(protein_cds=protein_cds,identity=identity,coverage=coverage)
+    process_blast.process_blast_out(protein_cds=protein_cds,identity=identity,coverage=coverage)
     print "Matching clusters..."
-    # process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
+    process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
+    print "Aligning proteins with MUSCLE, this may take long..."
     pool_size = 8
     pool = mp.Pool(processes=pool_size)
-    print "Aligning proteins with MUSCLE, this may take long..."
     pool.map(run_muscle.muscle, cluster_file_list)
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     return afa_file_list
