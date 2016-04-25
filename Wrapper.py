@@ -11,6 +11,7 @@ from os.path import isfile, join
 import multiprocessing as mp
 import pandas as pd
 from Bio import SeqIO
+import sys
 # SCRIPTS
 import prot_to_cds
 import run_paml_yn00
@@ -21,6 +22,40 @@ import process_cluster_all
 import run_muscle
 
 # FUNCTIONS
+
+# MAIN
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    args = get_parsed_args()
+    working_dir = args.working_dir
+    if not working_dir.endswith('/'):
+        working_dir = working_dir + '/'
+    else:
+        working_dir = working_dir
+    nucleotide_cds = args.nucleotide_cds
+    out_prefix = args.output_pref
+    identity = args.identity
+    coverage = args.coverage
+    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
+    kS_df_total = pd.DataFrame()
+    myfile=open(nucleotide_cds,'r')
+    records = list(SeqIO.parse(myfile,"fasta"))
+    myfile.close()
+    for record in records:
+        record.seq = record.seq[:-3]
+    nucleotide_cds_trunc = nucleotide_cds+'_trunc'
+    with open(nucleotide_cds_trunc,"w") as f:
+        SeqIO.write(records,f,"fasta")
+    for afa_file in afa_file_list:
+        try:
+            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
+            ks_df = ks_correction.correct_ks(run)
+            kS_df_total = kS_df_total.append(ks_df)
+        except:
+            continue
+    # Draw histogram
+    ks_correction.draw_histo(kS_df_total)
 
 # Arguments
 def get_parsed_args():
@@ -34,9 +69,9 @@ def get_parsed_args():
     parser = argparse.ArgumentParser(
         description="Generate kS distrbution histogram to detect Whole Genome Duplication (WGD) events. "+
                     "Taking the full coding sequences of an organism as input.")
-    parser.add_argument("-i", dest=nucleotide_cds, help="Full coding sequences of the organism of interest.")
-    parser.add_argument("-o", dest=outout_pref, help="Prefix for the MCL clustered files.")
-    parser.add_argument("-d", dest=working_dir, default="./", help="Working directory to store intermediate files of each step. Default: ./ .")
+    parser.add_argument("-i", dest='nucleotide_cds', help="Full coding sequences of the organism of interest.")
+    parser.add_argument("-o", dest='outout_pref', help="Prefix for the MCL clustered files.")
+    parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of each step. Default: ./ .")
     parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in BLAST result. Default: 50 .")
     parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment coverage in BLAST result. Default: 30 .")
 
@@ -78,39 +113,7 @@ def Long_wrapper(yn00_obj):
     ks_df = ks_correction.correct_ks(yn00=yn00_obj)
     ks_correction.draw_histo(ks_df=ks_df)
 
-# MAIN
-def main(argv=None):
-    if argv is None:
-        argv = sys.argv
-    args = get_parsed_args()
-    working_dir = args.working_dir
-    if not working_dir.endswith('/'):
-        working_dir = working_dir + '/'
-    else:
-        working_dir = working_dir
-    nucleotide_cds = args.nucleotide_cds
-    out_prefix = args.output_pref
-    identity = args.identity
-    coverage = args.coverage
-    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
-    kS_df_total = pd.DataFrame()
-    myfile=open(nucleotide_cds,'r')
-    records = list(SeqIO.parse(myfile,"fasta"))
-    myfile.close()
-    for record in records:
-        record.seq = record.seq[:-3]
-    nucleotide_cds_trunc = nucleotide_cds+'_trunc'
-    with open(nucleotide_cds_trunc,"w") as f:
-        SeqIO.write(records,f,"fasta")
-    for afa_file in afa_file_list:
-        try:
-            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
-            ks_df = ks_correction.correct_ks(run)
-            kS_df_total = kS_df_total.append(ks_df)
-        except:
-            continue
-    # Draw histogram
-    ks_correction.draw_histo(kS_df_total)
+
 
 
 
