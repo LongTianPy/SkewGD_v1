@@ -1,4 +1,3 @@
-import translator
 from Bio import SeqIO
 from Bio.Alphabet import generic_dna
 #Step 1: Convert cds to protein sequences
