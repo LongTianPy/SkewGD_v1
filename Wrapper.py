@@ -60,7 +60,7 @@ def main(argv=None):
     # Draw histogram
     print "Correcting kS...\n"
     print "Plotting on canvas..."
-    ks_correction.draw_histo(kS_df_total)
+    ks_correction.draw_histo(kS_df_total,working_dir)
 
 # Arguments
 def get_parsed_args():
