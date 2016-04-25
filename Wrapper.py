@@ -86,12 +86,12 @@ def get_parsed_args():
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     protein_cds = nucleotide_cds+".protein"
     print "Translating CDS to proteins...\n"
-    convert1.convert(nucleotide_cds)
+    # convert1.convert(nucleotide_cds)
     print "Self-blasting, this may take long...\n"
-    process_blast.run_blast(protein_cds=protein_cds)
+    # process_blast.run_blast(protein_cds=protein_cds)
     mcl_out = protein_cds+".mcl_out"
     print "Clustering..."
-    process_blast.process_blast(protein_cds=prot_to_cds,identity=identity,coverage=coverage)
+    process_blast.process_blast(protein_cds=protein_cds,identity=identity,coverage=coverage)
     print "Matching clusters..."
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
