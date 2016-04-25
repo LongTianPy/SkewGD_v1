@@ -102,13 +102,13 @@ def main(argv=None):
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
     with open(nucleotide_cds_trunc,"w") as f:
         SeqIO.write(records,f,"fasta")
-for afa_file in afa_file_list:
-    try:
-        run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
-        ks_df = ks_correction.correct_ks(run)
-        kS_df_total = kS_df_total.append(ks_df)
-    except:
-        continue
+    for afa_file in afa_file_list:
+        try:
+            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
+            ks_df = ks_correction.correct_ks(run)
+            kS_df_total = kS_df_total.append(ks_df)
+        except:
+            continue
 
 
 
