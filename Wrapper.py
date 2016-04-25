@@ -47,6 +47,8 @@ def main(argv=None):
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
     with open(nucleotide_cds_trunc,"w") as f:
         SeqIO.write(records,f,"fasta")
+    print "Reverse translating proteins based on provided CDS and running CODEML."
+    print "Runtime depends..."
     for afa_file in afa_file_list:
         try:
             run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
@@ -55,6 +57,8 @@ def main(argv=None):
         except:
             continue
     # Draw histogram
+    print "Correcting kS...\n"
+    print "Plotting on canvas..."
     ks_correction.draw_histo(kS_df_total)
 
 # Arguments
@@ -81,13 +85,17 @@ def get_parsed_args():
 # Individual wrappers
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     protein_cds = nucleotide_cds+".protein"
+    print "Translating CDS to proteins...\n"
     convert1.convert(nucleotide_cds)
-    # process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
+    print "Self-blasting, this may take long...\n"
+    process_blast.run_blast(protein_cds=protein_cds,identiy=identity,coverage=coverage)
     mcl_out = protein_cds+".mcl_out"
-    # process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
+    print "Matching clusters..."
+    process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     pool_size = 8
     pool = mp.Pool(processes=pool_size)
+    print "Aligning proteins with MUSCLE, this may take long..."
     pool.map(run_muscle.muscle, cluster_file_list)
     pool.close()
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
@@ -108,10 +116,6 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     os.system(cmd)
     run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
     return run
-
-def Long_wrapper(yn00_obj):
-    ks_df = ks_correction.correct_ks(yn00=yn00_obj)
-    ks_correction.draw_histo(ks_df=ks_df)
 
 
 
