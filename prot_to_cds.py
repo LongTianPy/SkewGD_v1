@@ -198,7 +198,7 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     # AlignIO.write(nuc_align,f,"phylip-sequential")
     f.write("\t{0}\t{1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
     for i in nuc_align:
-        f.write(i.id+"  "+i.seq+"\n")
+        f.write("{0}  {1}\n".format(i.id,i.seq))
     f.close()
     nuc_dict.close()
 
