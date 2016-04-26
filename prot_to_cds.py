@@ -149,7 +149,7 @@ def alignment_back_translate(protein_alignment, nucleotide_records, key_function
             raise ValueError("Could not find nucleotide sequence for protein %r" \
                              % protein.id)
         aligned.append(sequence_back_translate(protein, nucleotide, gap, table))
-    return MultipleSeqAlignment(aligned)
+    return aligned
 
 
 # if len(sys.argv) == 4:
