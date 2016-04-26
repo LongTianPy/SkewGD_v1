@@ -8,6 +8,7 @@ from Bio.Align import MultipleSeqAlignment
 from Bio import SeqIO
 from Bio import AlignIO
 from Bio.Data.CodonTable import ambiguous_generic_by_id
+from Bio.SeqRecord import SeqRecord
 
 if "-v" in sys.argv or "--version" in sys.argv:
     print "v0.0.5"
@@ -108,11 +109,11 @@ def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record,
     assert not nuc, "Nucleotide sequence for %r longer than protein %r" \
         % (unaligned_nucleotide_record.id, aligned_protein_record.id)
 
-    aligned_nuc = unaligned_nucleotide_record
-    aligned_nuc.letter_annotation = {} 
-    aligned_nuc.seq = Seq("".join(seq), generic_dna)
-    aligned_nuc.id = unaligned_nucleotide_record.id
-    assert len(aligned_protein_record.seq) * 3 == len(aligned_nuc)
+    aligned_nuc = SeqRecord(Seq("".join(seq), generic_dna), id=aligned_protein_record.id)
+    # aligned_nuc.letter_annotation = {}
+    # aligned_nuc.seq = Seq("".join(seq), generic_dna)
+    # aligned_nuc.id = unaligned_nucleotide_record.id
+    # assert len(aligned_protein_record.seq) * 3 == len(aligned_nuc)
     return aligned_nuc
 
 def back_translate(protein_alignment, nucleotide_dict):
@@ -149,7 +150,7 @@ def alignment_back_translate(protein_alignment, nucleotide_records, key_function
             raise ValueError("Could not find nucleotide sequence for protein %r" \
                              % protein.id)
         aligned.append(sequence_back_translate(protein, nucleotide, gap, table))
-    return MultipleSeqAlignment(aligned)
+    return aligned
 
 
 # if len(sys.argv) == 4:
