@@ -108,10 +108,10 @@ def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record,
     assert not nuc, "Nucleotide sequence for %r longer than protein %r" \
         % (unaligned_nucleotide_record.id, aligned_protein_record.id)
 
-    aligned_nuc = unaligned_nucleotide_record[:] 
+    aligned_nuc = unaligned_nucleotide_record
     aligned_nuc.letter_annotation = {} 
     aligned_nuc.seq = Seq("".join(seq), generic_dna)
-    aligned_nuc.id = aligned_protein_record.id
+    aligned_nuc.id = unaligned_nucleotide_record.id
     assert len(aligned_protein_record.seq) * 3 == len(aligned_nuc)
     return aligned_nuc
 
