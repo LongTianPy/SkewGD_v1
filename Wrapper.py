@@ -103,7 +103,7 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     return afa_file_list
 
-def Andrew_wrapper(prot_cluster_file, nucleotide_file,working_dir):
+def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     """
     This function contains Andrew's part
     :param prot_cluster_file: Sequences of clusters
@@ -116,7 +116,7 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file,working_dir):
     pattern = 's/\./  /g'
     cmd = "sed '{0}' {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
     os.system(cmd)
-    run = run_paml_yn00.run_yn00(prot_to_cds_out_sub,working_dir=working_dir)
+    run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
     return run
 
 
