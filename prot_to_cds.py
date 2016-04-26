@@ -149,7 +149,7 @@ def alignment_back_translate(protein_alignment, nucleotide_records, key_function
             raise ValueError("Could not find nucleotide sequence for protein %r" \
                              % protein.id)
         aligned.append(sequence_back_translate(protein, nucleotide, gap, table))
-    return aligned
+    return MultipleSeqAlignment(aligned)
 
 
 # if len(sys.argv) == 4:
@@ -192,14 +192,12 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
     #nuc_align = [nuc_dict[i.id] for i in prot_align]
     nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
-    print nuc_align
-    #nuc_align = back_translate(prot_align, nuc_dict)
-    f = open(nuc_align_file,"w")
-    # AlignIO.write(nuc_align,f,"phylip-sequential")
-    f.write("\t{0}\t{1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
-    for i in nuc_align:
-        print i
-        f.write(i.id+"  "+i.seq+"\n")
-    f.close()
+    # nuc_align = back_translate(prot_align, nuc_dict)
+    # f = open(nuc_align_file,"w")
+    AlignIO.write(nuc_align,f,"phylip")
+    # f.write("\t{0}\t{1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
+    # for i in nuc_align:
+    #     f.write(i.id+"  "+i.seq+"\n")
+    # f.close()
     nuc_dict.close()
 
