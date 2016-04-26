@@ -193,7 +193,7 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     #nuc_align = [nuc_dict[i.id] for i in prot_align]
     nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
     # nuc_align = back_translate(prot_align, nuc_dict)
-    # f = open(nuc_align_file,"w")
+    f = open(nuc_align_file,"w")
     AlignIO.write(nuc_align,f,"phylip")
     # f.write("\t{0}\t{1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
     # for i in nuc_align:
