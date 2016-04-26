@@ -199,6 +199,7 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     f.write("  {0}  {1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
     for i in nuc_align:
         f.write("{0}  {1}\n".format(i.id,i.seq))
+    f.write("\n")
     f.close()
     nuc_dict.close()
 
