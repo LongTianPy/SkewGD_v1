@@ -8,7 +8,6 @@ from Bio.Align import MultipleSeqAlignment
 from Bio import SeqIO
 from Bio import AlignIO
 from Bio.Data.CodonTable import ambiguous_generic_by_id
-from Bio.SeqRecord import SeqRecord
 
 if "-v" in sys.argv or "--version" in sys.argv:
     print "v0.0.5"
@@ -109,11 +108,9 @@ def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record,
     assert not nuc, "Nucleotide sequence for %r longer than protein %r" \
         % (unaligned_nucleotide_record.id, aligned_protein_record.id)
 
-    # aligned_nuc = SeqRecord(Seq("".join(seq), generic_dna), id=aligned_protein_record.id)
-    aligned_nuc = unaligned_nucleotide_record[:]
-    aligned_nuc.letter_annotation = {}
+    aligned_nuc = unaligned_nucleotide_record[:] 
+    aligned_nuc.letter_annotation = {} 
     aligned_nuc.seq = Seq("".join(seq), generic_dna)
-    aligned_nuc.id = unaligned_nucleotide_record.id
     assert len(aligned_protein_record.seq) * 3 == len(aligned_nuc)
     return aligned_nuc
 
@@ -194,13 +191,8 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     nuc_dict = SeqIO.index(nuc_fasta_file, "fasta")
     #nuc_align = [nuc_dict[i.id] for i in prot_align]
     nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
-    # nuc_align = back_translate(prot_align, nuc_dict)
+    #nuc_align = back_translate(prot_align, nuc_dict)
     f = open(nuc_align_file,"w")
-    AlignIO.write(nuc_align,f,"phylip-relaxed")
-    # f.write("  {0}  {1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
-    # for i in nuc_align:
-    #     f.write("{0}  {1}\n".format(i.id,i.seq))
-    # f.write("\n")
-    # f.close()
+    AlignIO.write(nuc_align,f,"phylip-sequential")
     nuc_dict.close()
 
