@@ -20,6 +20,8 @@ def convert(nucleotide_cds):
         #output.write(header+'\n')
         #output.write(allseq+'\n')
     records_trunc = list(SeqIO.parse(myfile,"fasta"))
+    myfile.close()
+    myfile=open(nucleotide_cds,'r')
     records_prot = list(SeqIO.parse(myfile,"fasta"))
     myfile.close()
     count = 1
