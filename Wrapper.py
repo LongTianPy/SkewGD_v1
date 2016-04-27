@@ -40,13 +40,7 @@ def main(argv=None):
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
     kS_df_total = pd.DataFrame()
     myfile=open(nucleotide_cds,'r')
-    records = list(SeqIO.parse(myfile,"fasta"))
-    myfile.close()
-    for record in records:
-        record.seq = record.seq[:-3]
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
-    with open(nucleotide_cds_trunc,"w") as f:
-        SeqIO.write(records,f,"fasta")
     print "Reverse translating proteins based on provided CDS and running CODEML."
     print "Runtime depends..."
     for afa_file in afa_file_list:
@@ -112,11 +106,11 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     """
     prot_to_cds_out = prot_cluster_file+".phy"
     prot_to_cds.write_align(prot_align_file=prot_cluster_file, nuc_fasta_file=nucleotide_file, nuc_align_file=prot_to_cds_out)
-    # prot_to_cds_out_sub = prot_to_cds_out+"_sub" # Subtitute dot to 2 spaces
-    # pattern = 's/\./  /g'
-    # cmd = "sed '{0}' {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
-    # os.system(cmd)
-    run = run_paml_yn00.run_yn00(prot_to_cds_out)
+    prot_to_cds_out_sub = prot_to_cds_out+"_sub" # Subtitute dot to 2 spaces
+    pattern = 's/\./  /g'
+    cmd = "sed '{0}' {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
+    os.system(cmd)
+    run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
     return run
 
 

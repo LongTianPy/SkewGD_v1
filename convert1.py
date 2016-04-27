@@ -19,8 +19,17 @@ def convert(nucleotide_cds):
         #allseq=''.join(slist)
         #output.write(header+'\n')
         #output.write(allseq+'\n')
-    records = list(SeqIO.parse(myfile,"fasta"))
+    records_trunc = list(SeqIO.parse(myfile,"fasta"))
+    records_prot = records_trunc
     myfile.close()
+    count = 1
+    for record in records_trunc:
+        record.id = "gene"+str(count)+"."
+        count += 1
+        record.seq = record.seq[:-3]
+    nucleotide_cds_trunc = nucleotide_cds+'_trunc'
+    with open(nucleotide_cds_trunc,"w") as f:
+        SeqIO.write(records_trunc,f,"fasta")
     # for i in doc:
     #     protein=translator.translate_dna_single(doc[i]['sequence'])
     #     if(protein.startswith('M') and protein.endswith('_')):
@@ -30,11 +39,14 @@ def convert(nucleotide_cds):
     # output.close()
     #for i in doc:
         #print i, doc[i]['sequence']
-    for i in records:
+    count = 1
+    for i in records_prot:
+        i.id = "gene"+str(count)+"."
         i.seq = i.seq.translate()
         i.seq = i.seq[:-1]
+        count += 1
     with open(protein_out,'w') as outfile:
-        SeqIO.write(records,outfile,'fasta')
+        SeqIO.write(records_prot,outfile,'fasta')
     outfile.close()
 
 
