@@ -47,7 +47,6 @@ def convert(nucleotide_cds):
         count += 1
     with open(protein_out,'w') as outfile:
         SeqIO.write(records_prot,outfile,'fasta')
-    outfile.close()
 
 
 
