@@ -195,11 +195,11 @@ def write_align(prot_align_file,nuc_fasta_file,nuc_align_file):
     nuc_align = alignment_back_translate(prot_align, nuc_dict, gap="-", table=0)
     # nuc_align = back_translate(prot_align, nuc_dict)
     f = open(nuc_align_file,"w")
-    # AlignIO.write(nuc_align,f,"phylip-sequential")
-    f.write("  {0}  {1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
-    for i in nuc_align:
-        f.write("{0}  {1}\n".format(i.id,i.seq))
-    f.write("\n")
-    f.close()
+    AlignIO.write(nuc_align,f,"phylip-relaxed")
+    # f.write("  {0}  {1}\n".format(len(nuc_align),len(nuc_align[0].seq)))
+    # for i in nuc_align:
+    #     f.write("{0}  {1}\n".format(i.id,i.seq))
+    # f.write("\n")
+    # f.close()
     nuc_dict.close()
 
