@@ -54,6 +54,7 @@ def main(argv=None):
     # Draw histogram
     print "Correcting kS...\n"
     print "Plotting on canvas..."
+    kS_df_total.to_csv(working_dir+"ks.csv")
     ks_correction.draw_histo(kS_df_total,working_dir)
 
 # Arguments
