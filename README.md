@@ -8,7 +8,7 @@ WGD_detection is a script implementing several bioinformatics software and calcu
 
 INPUT: CDS file in FASTA format;
 
-OUTPUT: kS distribution histogram
+OUTPUT: kS distribution data in csv format and histogram in user-indicated working directory (set by -d).
 
 
 WORKFLOW
