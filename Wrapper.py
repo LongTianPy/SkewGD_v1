@@ -37,14 +37,14 @@ def main(argv=None):
     out_prefix = args.output_pref
     identity = args.identity
     coverage = args.coverage
-    # afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
+    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
     kS_df_total = pd.DataFrame()
     myfile=open(nucleotide_cds,'r')
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
     print "Reverse translating proteins based on provided CDS and running CODEML."
     print "Runtime depends..."
-    cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
-    afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
+    # cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
+    # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     for afa_file in afa_file_list:
         try:
             run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
