@@ -29,6 +29,7 @@ DEPENDENCIES AND REQUIREMENTS
 -----------------------------
 
 WGD_detection is developed in Python 2.x with modules and external software. Except Python modules, make sure all external software can be executed by directly using software name, i.e. `python`, `blastp`, `mcl` and `muscle`.
+For YN00 from PAML, file path the YN00 binary is required to set from command line.
 
 * [**Python 2.x**](https://www.python.org/)
 *   Modules can be installed using [pip](https://pip.pypa.io/en/stable/installing/) `pip install [module_name]`
@@ -38,6 +39,7 @@ WGD_detection is developed in Python 2.x with modules and external software. Exc
 * [**BLAST for LINUX**] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.3.0 -- [Installation guide](http://www.ncbi.nlm.nih.gov/books/NBK52640/)
 * [**MCL**](http://micans.org/mcl/)
 * [**MUSCLE**](http://www.drive5.com/muscle/)
+* [**YN00**](http://abacus.gene.ucl.ac.uk/software/paml.html#download)
 
 
 USAGE
