@@ -44,19 +44,19 @@ USAGE
 -----
 
 ```
-$ python WGD_detection.py -h
-usage: Wrapper.py [-h] [-i NUCLEOTIDE_CDS] [-o OUTPUT_PREF] [-d WORKING_DIR]
-                  [--identity IDENTITY] [--coverage COVERAGE]
+usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-o OUTPUT_PREF]
+                        [-d WORKING_DIR] [-y YN00_PATH] [--identity IDENTITY]
+                        [--coverage COVERAGE]
 
 Generate kS distrbution histogram to detect Whole Genome Duplication (WGD)
 events. Taking the full coding sequences of an organism as input.
 
-optional arguments:
   -h, --help           show this help message and exit
   -i NUCLEOTIDE_CDS    Full coding sequences of the organism of interest.
   -o OUTPUT_PREF       Prefix for the MCL clustered files.
   -d WORKING_DIR       Working directory to store intermediate files of each
                        step. Default: ./ .
+  -y YN00_PATH         File path to yn00 executable.
   --identity IDENTITY  Threshold of percentage identity in BLAST result.
                        Default: 50 .
   --coverage COVERAGE  Threshold of percentage alignment coverage in BLAST

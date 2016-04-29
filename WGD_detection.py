@@ -39,7 +39,6 @@ def main(argv=None):
     coverage = args.coverage
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
     kS_df_total = pd.DataFrame()
-    myfile=open(nucleotide_cds,'r')
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
     print "Reverse translating proteins based on provided CDS and running CODEML."
     print "Runtime depends..."
@@ -74,6 +73,7 @@ def get_parsed_args():
     parser.add_argument("-i", dest='nucleotide_cds', help="Full coding sequences of the organism of interest.")
     parser.add_argument("-o", dest='output_pref', help="Prefix for the MCL clustered files.")
     parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of each step. Default: ./ .")
+    parser.add_argument("-y", dest="yn00_path", help="File path to yn00 executable.")
     parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in BLAST result. Default: 50 .")
     parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment coverage in BLAST result. Default: 30 .")
 
