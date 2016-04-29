@@ -35,6 +35,7 @@ def main(argv=None):
         working_dir = working_dir
     nucleotide_cds = args.nucleotide_cds
     out_prefix = args.output_pref
+    yn00_binary = args.yn00_path
     identity = args.identity
     coverage = args.coverage
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
@@ -46,7 +47,7 @@ def main(argv=None):
     # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     for afa_file in afa_file_list:
         try:
-            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
+            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc, yn00_binary)
             ks_df = ks_correction.correct_ks(run)
             kS_df_total = kS_df_total.append(ks_df)
         except:
@@ -100,7 +101,7 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     return afa_file_list
 
-def Andrew_wrapper(prot_cluster_file, nucleotide_file):
+def Andrew_wrapper(prot_cluster_file, nucleotide_file, yn00_binary):
     """
     This function contains Andrew's part
     :param prot_cluster_file: Sequences of clusters
@@ -113,7 +114,7 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     pattern = 's/\./  /g'
     cmd = "sed '{0}' {1} > {2}".format(pattern, prot_to_cds_out, prot_to_cds_out_sub)
     os.system(cmd)
-    run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
+    run = run_paml_yn00.run_yn00(prot_to_cds_out_sub,yn00_binary)
     return run
 
 

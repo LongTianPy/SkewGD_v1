@@ -7,8 +7,8 @@ from Bio.Phylo.PAML import yn00
 # input_path = sys.argv[1]
 # output_file = sys.argv[2]
 
-def run_yn00(input_phy):
-    binary = "/home/longtian/Downloads/paml4.9a/bin/yn00"
+def run_yn00(input_phy,yn00_binary):
+    binary = yn00_binary
     yn = yn00.Yn00()
     yn.alignment = input_phy
     yn.out_file = input_phy+".out"
