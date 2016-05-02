@@ -14,6 +14,7 @@ except:
     sys.exit()
 import matplotlib.pyplot as plt
 from scipy import stats
+from numpy import log2
 
 ### FUNCTIONS
 def loadcluster(df,seq_names):
@@ -108,6 +109,13 @@ def cluster_finder(index, pairs_dict):
             components_of_biggest_cluster_left = get_biggest_cluster(left)
             components_of_biggest_cluster_right = get_biggest_cluster(right)
             if components_of_biggest_cluster_left == components_of_biggest_cluster_right:
+                cluster_list = tax_cluster[left]
+                cluster_size = [len(cluster_tax[each]) for each in cluster_list]
+                cluster_size_w_idx = [[size,idx] for idx,size in enumerate(cluster_size)]
+                cluster_size_w_idx.sort()
+                idx_biggest_cluster = cluster_size_w_idx[-1][1]
+                biggest_cluster = cluster_list[idx_biggest_cluster] # To be updated
+                cluster_ks[biggest_cluster].append(pairs_dict[i])
                 continue
             else:
                 NewCluster = 'Cluster'+str(len(cluster_tax.keys())+1)
@@ -157,7 +165,7 @@ def correct_ks(yn00):
 
 def draw_histo(ks_df, working_dir):
     size = len(ks_df)
-    ax = seaborn.distplot(a=ks_df["kS_values"], kde=False,kde_kws={"color":"red"}, axlabel=False,bins=20)
+    ax = seaborn.distplot(a=ks_df["kS_values"], kde=False,kde_kws={"color":"red"}, axlabel=False,bins=100)
     ax.set(xlabel="kS", ylabel= "Frequency", title="kS distribution",xlim=(0, 5))
     plt.savefig(working_dir+"ks_distribution.pdf",format="pdf")
     plt.clf()
