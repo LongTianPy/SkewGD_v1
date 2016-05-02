@@ -12,6 +12,7 @@ import multiprocessing as mp
 import pandas as pd
 from Bio import SeqIO
 import sys
+from functools import partial
 # SCRIPTS
 import prot_to_cds
 import run_paml_yn00
@@ -37,22 +38,21 @@ def main(argv=None):
     out_prefix = args.output_pref
     identity = args.identity
     coverage = args.coverage
-    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
+    # afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
     kS_df_total = pd.DataFrame()
-    myfile=open(nucleotide_cds,'r')
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
+    f = open("top10_list.txt","r")
+    afa_file_list = [i.strip() for i in f.readlines()]
+    f.close()
     print "Reverse translating proteins based on provided CDS and running CODEML."
     print "Runtime depends..."
     # cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     for afa_file in afa_file_list:
-        try:
-            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
-            ks_df = ks_correction.correct_ks(run)
-            kS_df_total = kS_df_total.append(ks_df)
-        except:
-            print "Error in " + afa_file + ", skipped."
-            continue
+        run = Andrew_wrapper(afa_file, nucleotide_cds_trunc)
+        ks_df = ks_correction.correct_ks(run)
+        ks_df.to_csv(afa_file+".csv")
+        kS_df_total = kS_df_total.append(ks_df)
     # Draw histogram
     print "Correcting kS...\n"
     print "Plotting on canvas..."
@@ -116,6 +116,13 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file):
     run = run_paml_yn00.run_yn00(prot_to_cds_out_sub)
     return run
 
+def Andrew_Long_wrapper(prot_cluter_file, nucleotide_file_trunc,kS_total):
+    try:
+        run = Andrew_wrapper(prot_cluter_file,nucleotide_file_trunc)
+        ks_df = ks_correction.correct_ks(run)
+        kS_df_total = kS_df_total.append(ks_df)
+    except:
+        pass
 
 
 
