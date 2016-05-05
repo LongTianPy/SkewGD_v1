@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>SkewGD by LongTianPy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">SkewGD</h1>
+      <h2 class="project-tagline">Whole Genome Duplication detection pipeline</h2>
+      <a href="https://github.com/LongTianPy/SkewGD" class="btn">View on GitHub</a>
+      <a href="https://github.com/LongTianPy/SkewGD/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/LongTianPy/SkewGD/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="wgd" class="anchor" href="#wgd" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WGD</h1>
+
+<p>Whole Genome Duplication detection pipeline</p>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>INTRODUCTION</h2>
+
+<p>WGD_detection is a script implementing several bioinformatics software and calculation to visualize gene duplication events by processing the full set of coding sequences (CDS) of an organism.</p>
+
+<p>INPUT: CDS file in FASTA format;</p>
+
+<p>OUTPUT: kS distribution data in csv format and histogram in user-indicated working directory (set by -d).</p>
+
+<h2>
+<a id="workflow" class="anchor" href="#workflow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WORKFLOW</h2>
+
+<ol>
+<li>CDS translation to protein sequences;</li>
+<li>Pairwise self-BLASTP by BLASTP;</li>
+<li>Extraction of pairs of comparison by identity (default: 50%) and coverage (default: 30%);</li>
+<li>Markov chain clustering by MCL;</li>
+<li>Sequence Alignment of each cluster by MUSCLE;</li>
+<li>For each alignment, reverse translation of protein sequences back to nucleotide sequences according to the input CDS;</li>
+<li>Maximum likelihood phylogenetic analysis on each nucleotide sequence alignment by yn00 from PAML;</li>
+<li>kS correction and gene duplication event clustering;</li>
+<li>Data visualization</li>
+</ol>
+
+<h2>
+<a id="dependencies-and-requirements" class="anchor" href="#dependencies-and-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DEPENDENCIES AND REQUIREMENTS</h2>
+
+<p>WGD_detection is developed in Python 2.x with modules and external software. Except Python modules, make sure all external software can be executed by directly using software name, i.e. <code>python</code>, <code>blastp</code>, <code>mcl</code> and <code>muscle</code>.
+For YN00 from PAML, file path of the YN00 binary is required to be set from command line.</p>
+
+<ul>
+<li><a href="https://www.python.org/"><strong>Python 2.x</strong></a></li>
+<li>  Modules can be installed using <a href="https://pip.pypa.io/en/stable/installing/">pip</a> <code>pip install [module_name]</code>
+</li>
+<li>  <strong>Pandas</strong>
+</li>
+<li>  <strong>BioPython</strong>
+</li>
+<li>  <strong>Seaborn</strong>
+</li>
+<li>[<strong>BLAST for LINUX</strong>] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.3.0 -- <a href="http://www.ncbi.nlm.nih.gov/books/NBK52640/">Installation guide</a>
+</li>
+<li><a href="http://micans.org/mcl/"><strong>MCL</strong></a></li>
+<li><a href="http://www.drive5.com/muscle/"><strong>MUSCLE</strong></a></li>
+<li><a href="http://abacus.gene.ucl.ac.uk/software/paml.html#download"><strong>YN00</strong></a></li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>USAGE</h2>
+
+<pre><code>usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-o OUTPUT_PREF]
+                        [-d WORKING_DIR] [-y YN00_PATH] [--identity IDENTITY]
+                        [--coverage COVERAGE]
+
+Generate kS distrbution histogram to detect Whole Genome Duplication (WGD)
+events. Taking the full coding sequences of an organism as input.
+
+  -h, --help           show this help message and exit
+  -i NUCLEOTIDE_CDS    Full coding sequences of the organism of interest.
+  -o OUTPUT_PREF       Prefix for the MCL clustered files.
+  -d WORKING_DIR       Working directory to store intermediate files of each
+                       step. Default: ./ .
+  -y YN00_PATH         File path to yn00 executable.
+  --identity IDENTITY  Threshold of percentage identity in BLAST result.
+                       Default: 50 .
+  --coverage COVERAGE  Threshold of percentage alignment coverage in BLAST
+                       result. Default: 30 .
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/LongTianPy/SkewGD">SkewGD</a> is maintained by <a href="https://github.com/LongTianPy">LongTianPy</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
