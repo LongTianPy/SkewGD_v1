@@ -10,6 +10,7 @@ from os import listdir
 from os.path import isfile, join
 import multiprocessing as mp
 import pandas as pd
+from datetime import datetime
 from Bio import SeqIO
 import sys
 # SCRIPTS
@@ -38,11 +39,14 @@ def main(argv=None):
     yn00_binary = args.yn00_path
     identity = args.identity
     coverage = args.coverage
+    print "=================================================="
+    print "Welcome to SkewGD pipeline"
+    print "Current time:", datetime.now()
+    print "==================================================\n"
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
     kS_df_total = pd.DataFrame()
     nucleotide_cds_trunc = nucleotide_cds+'_trunc'
-    print "Reverse translating proteins based on provided CDS and running CODEML."
-    print "Runtime depends..."
+    print "Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS and correcting kS...", datetime.now()
     # cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     for afa_file in afa_file_list:
@@ -54,10 +58,13 @@ def main(argv=None):
             print "Error in " + afa_file + ", skipped."
             continue
     # Draw histogram
-    print "Correcting kS...\n"
-    print "Plotting on canvas..."
+    print "Step 10 out of 10: Generating results and plotting on canvas...",datetime.now()
     kS_df_total.to_csv(working_dir+"ks.csv")
     ks_correction.draw_histo(kS_df_total,working_dir)
+    print "=================================================="
+    print "Thank you for using SkewGD, your analysis has been completed."
+    print "Current time," datetime.now()
+    print "==================================================\n"
 
 # Arguments
 def get_parsed_args():
@@ -84,17 +91,14 @@ def get_parsed_args():
 # Individual wrappers
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
     protein_cds = nucleotide_cds+".protein"
-    print "Translating CDS to proteins...\n"
+    print "Step 1 of 9: Translating CDS to protein sequences...", datetime.now()
     convert1.convert(nucleotide_cds)
-    print "Self-blasting, this may take long...\n"
     process_blast.run_blast(protein_cds=protein_cds)
     mcl_out = protein_cds+".mcl_out"
-    print "Clustering..."
     process_blast.process_blast_out(protein_cds=protein_cds,identity=identity,coverage=coverage)
-    print "Matching clusters..."
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
-    print "Aligning proteins with MUSCLE, this may take long..."
+    print "Step 6 of 10: Aligning protein sequences within each cluster...", datetime.now()
     pool_size = 8
     pool = mp.Pool(processes=pool_size)
     pool.map(run_muscle.muscle, cluster_file_list)

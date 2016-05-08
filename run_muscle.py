@@ -1,5 +1,5 @@
 import os
-import pickle
+from datetime import datetime
 
 def muscle(protein_cluster):
     aligned_out = protein_cluster+'.afa'

@@ -165,7 +165,7 @@ def correct_ks(yn00):
 
 def draw_histo(ks_df, working_dir):
     size = len(ks_df)
-    ax = seaborn.distplot(a=ks_df["kS_values"], kde=False,kde_kws={"color":"red"}, axlabel=False,bins=100)
+    ax = seaborn.distplot(a=ks_df["kS_values"], kde=False,kde_kws={"color":"red"}, axlabel=False,bins=20)
     ax.set(xlabel="kS", ylabel= "Frequency", title="kS distribution",xlim=(0, 5))
     plt.savefig(working_dir+"ks_distribution.pdf",format="pdf")
     plt.clf()

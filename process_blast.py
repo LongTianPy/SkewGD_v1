@@ -1,11 +1,14 @@
 import numpy
 import re
 import os
+from datetime import datetime
 
 #Run blast
 def run_blast(protein_cds):
+    print "Step 2 of 10: Building BLAST database...", datetime.now()
     cmd1 = "makeblastdb -in {0} -dbtype prot".format(protein_cds)
     os.system(cmd1)
+    print "Step 3 of 10: Performing self-BLAST...", datetime.now()
     blast_out = protein_cds+'.blast_out'
     cmd2 = "blastp -db {0} -query {1} -num_threads 8 -outfmt '6 qseqid sseqid pident qcovs' > {2}".format(protein_cds,protein_cds,blast_out)
     os.system(cmd2)
@@ -18,6 +21,7 @@ def process_blast_out(protein_cds,identity,coverage):
     mcl_out = protein_cds+'.mcl_out'
     myfile=open(blast_out,'r')
     doc={}
+    print "Step 4 of 10: Filtering BLAST result, using identity threshold of {0} and coverage threshold of {1}".format(identity,coverage), datetime.now()
     for line in myfile:
         listsq=line.split("\t")
         if listsq[0]!=listsq[1]:
@@ -50,4 +54,5 @@ def process_blast_out(protein_cds,identity,coverage):
     myfile.close()
     #Clustering using mcl
     #Step 4: Clustering
+    print "Step 5 of 10: Clustering proteins with Markov clustering algorithm...", datetime.now()
     os.system("mcl {0} --abc -o {1}".format(blast_processed, mcl_out))
