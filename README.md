@@ -1,5 +1,5 @@
-# WGD
-Whole Genome Duplication detection pipeline
+# SkewGD
+Summation of Ks pairs for Exploration of Whole Genome Duplications -- Whole Genome Duplication detection pipeline
 
 INTRODUCTION
 ------------
