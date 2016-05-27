@@ -34,38 +34,33 @@ def main(argv=None):
         working_dir = working_dir + '/'
     else:
         working_dir = working_dir
-    nucleotide_cds = args.nucleotide_cds
+
     out_prefix = args.output_pref
     yn00_binary = args.yn00_path
     identity = args.identity
     coverage = args.coverage
+    blastp_threads = args.blastp_threads
+    mcl_threads = args.mcl_threads
+    mcl_inflation = args.mcl_threads
+    cluster_aln_threads=args.cluster_aln_threads
     print "=================================================="
     print "Welcome to SkewGD pipeline"
     print "Current time:", datetime.now()
     print "==================================================\n"
-    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage, output_prefix=out_prefix,working_dir=working_dir)
-    kS_df_total = pd.DataFrame()
-    nucleotide_cds_trunc = nucleotide_cds+'_trunc'
-    print "Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS and correcting kS...", datetime.now()
-    # cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
-    # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
-    for afa_file in afa_file_list:
-        try:
-            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc, yn00_binary)
-            ks_df = ks_correction.correct_ks(run)
-            kS_df_total = kS_df_total.append(ks_df)
-        except:
-            print "Error in " + afa_file + ", skipped."
-            continue
-    # Draw histogram
-    print "Step 10 out of 10: Generating results and plotting on canvas...",datetime.now()
-    kS_df_total.to_csv(working_dir+"ks.csv")
-    ks_correction.draw_histo(kS_df_total,working_dir)
-    print "=================================================="
-    print "Thank you for using SkewGD, your analysis has been completed."
-    print "Current time," datetime.now()
-    print "==================================================\n"
-
+    if args.nucleotide_cds and not args.cds_folder:
+        nucleotide_cds = args.nucleotide_cds
+        pipeline_single_cds(nucleotide_cds=nucleotide_cds,output_prefix=out_prefix,identity=identity,coverage=coverage,
+                            working_dir=working_dir, blastp_threads=blastp_threads,mcl_threads=mcl_threads,
+                            mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,yn00_path=yn00_binary)
+    elif args.cds_folder and not args.nucleotide_cds:
+        pass
+    elif args.nucleotide_cds and args.cds_folder:
+        print "-i and -I cannot be used at the same time.\nExiting..."
+        system.exit()
+    elif not args.cds_folder and not args.nucleotide_cds:
+        print "Either one CDS file or a directory with several CDS files should be provided with -i or -I, respectively."
+        print "Exiting..."
+        system.exit()
 # Arguments
 def get_parsed_args():
     """
@@ -79,27 +74,51 @@ def get_parsed_args():
         description="Generate kS distrbution histogram to detect Whole Genome Duplication (WGD) events. "+
                     "Taking the full coding sequences of an organism as input.")
     parser.add_argument("-i", dest='nucleotide_cds', help="Full coding sequences of the organism of interest.")
+    parser.add_argument("-I", dest="cds_folder",help="A directory with CDS files of different organisms only. NOTE: This"
+                                                     " option cannot be used with -i at the same time.")
     parser.add_argument("-o", dest='output_pref', help="Prefix for the MCL clustered files.")
-    parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of each step. Default: ./ .")
+    parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of "
+                                                                     "each step. Default: ./ .")
     parser.add_argument("-y", dest="yn00_path", help="File path to yn00 executable.")
-    parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in BLAST result. Default: 50 .")
-    parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment coverage in BLAST result. Default: 30 .")
+    parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in "
+                                                                                  "BLAST result. Default: 50 .")
+    parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment "
+                                                                                  "coverage in BLAST result. Default: 30 .")
+    parser.add_argument("--blastp_threads", dest="blastp_threads", type=int, default=8, help="Number of threads for "
+                                                                                             "running BLASTp. Default: 8 .")
+    parser.add_argument("--mcl_threads", dest="mcl_threads", type=int, default=1,help="Number of threads for running "
+                                                                                      "MCL. Default: 1 .")
+    parser.add_argument("--mcl_inflation", dest="mcl_inflation", type=float, default=2.0, help="Tune the granularity of "
+                                                                                               "clustering. Usually "
+                                                                                               "choose from "
+                                                                                               "the range of [1.2, 5.0]."
+                                                                                               " 5.0 makes it finely "
+                                                                                               "grained and 1.2 "
+                                                                                               "makes clustering "
+                                                                                               "coarsed. Default: 2.0 .")
+    parser.add_argument("--cluster_aln_threads", dest="cluster_aln_threads",type=int,default=8,help="Number of threads "
+                                                                                                    "for parallelling "
+                                                                                                    "the alignment of "
+                                                                                                    "clusters. Default: "
+                                                                                                    "8 .")
 
     args = parser.parse_args()
     return args
 
 # Individual wrappers
-def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir):
+def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
+                 cluster_aln_threads):
     protein_cds = nucleotide_cds+".protein"
     print "Step 1 of 9: Translating CDS to protein sequences...", datetime.now()
     convert1.convert(nucleotide_cds)
-    process_blast.run_blast(protein_cds=protein_cds)
+    process_blast.run_blast(protein_cds=protein_cds,blastp_threads=blastp_threads)
     mcl_out = protein_cds+".mcl_out"
-    process_blast.process_blast_out(protein_cds=protein_cds,identity=identity,coverage=coverage)
+    process_blast.process_blast_out(protein_cds=protein_cds,identity=identity,coverage=coverage,mcl_threads=mcl_threads,
+                                    mcl_inflation=mcl_inflation)
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     print "Step 6 of 10: Aligning protein sequences within each cluster...", datetime.now()
-    pool_size = 8
+    pool_size = cluster_aln_threads
     pool = mp.Pool(processes=pool_size)
     pool.map(run_muscle.muscle, cluster_file_list)
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
@@ -121,7 +140,38 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file, yn00_binary):
     run = run_paml_yn00.run_yn00(prot_to_cds_out_sub,yn00_binary)
     return run
 
+def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
+                 cluster_aln_threads,yn00_path):
+    afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage,
+                                 output_prefix=out_prefix, working_dir=working_dir, blastp_threads=blastp_threads,
+                                 mcl_threads=mcl_threads, mcl_inflation=mcl_inflation)
+    kS_df_total = pd.DataFrame()
+    nucleotide_cds_trunc = nucleotide_cds + '_trunc'
+    print "Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS " \
+          "and correcting kS...", datetime.now()
+    # cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
+    # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
+    for afa_file in afa_file_list:
+        try:
+            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc, yn00_binary)
+            ks_df = ks_correction.correct_ks(run)
+            kS_df_total = kS_df_total.append(ks_df)
+        except:
+            print "Error in " + afa_file + ", skipped."
+            continue
+    # Draw histogram
+    print "Step 10 out of 10: Generating results and plotting on canvas...", datetime.now()
+    kS_df_total.to_csv(working_dir + "ks.csv")
+    ks_correction.draw_histo(kS_df_total, working_dir)
+    print "=================================================="
+    print "Thank you for using SkewGD, your analysis has been completed."
+    print "Current time:", datetime.now()
+    print "==================================================\n"
+    return kS_df_total
 
+# def pipeline_folder_cds(cds_folder,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
+#                  cluster_aln_threads,yn00_path):
+#     pass
 
 
 

@@ -33,13 +33,13 @@ For YN00 from PAML, file path of the YN00 binary is required to be set from comm
 
 * [**Python 2.x**](https://www.python.org/)
 *   Modules can be installed using [pip](https://pip.pypa.io/en/stable/installing/) `pip install [module_name]`
-*   **Pandas**
-*   **BioPython**
-*   **Seaborn**
-* [**BLAST for LINUX**] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.3.0 -- [Installation guide](http://www.ncbi.nlm.nih.gov/books/NBK52640/)
-* [**MCL**](http://micans.org/mcl/)
-* [**MUSCLE**](http://www.drive5.com/muscle/)
-* [**YN00**](http://abacus.gene.ucl.ac.uk/software/paml.html#download)
+*   **Pandas 0.16.2**
+*   **BioPython 1.64**
+*   **Seaborn 0.7.0**
+* [**BLAST for LINUX v2.2.26**] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.3.0 -- [Installation guide](http://www.ncbi.nlm.nih.gov/books/NBK52640/)
+* [**MCL v14-137**](http://micans.org/mcl/)
+* [**MUSCLE v3.8.31**](http://www.drive5.com/muscle/)
+* [**YN00 v4.8**](http://abacus.gene.ucl.ac.uk/software/paml.html#download)
 
 
 USAGE

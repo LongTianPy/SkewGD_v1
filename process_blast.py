@@ -4,18 +4,21 @@ import os
 from datetime import datetime
 
 #Run blast
-def run_blast(protein_cds):
+def run_blast(protein_cds,blastp_threads):
     print "Step 2 of 10: Building BLAST database...", datetime.now()
     cmd1 = "makeblastdb -in {0} -dbtype prot".format(protein_cds)
     os.system(cmd1)
     print "Step 3 of 10: Performing self-BLAST...", datetime.now()
     blast_out = protein_cds+'.blast_out'
-    cmd2 = "blastp -db {0} -query {1} -num_threads 8 -outfmt '6 qseqid sseqid pident qcovs' > {2}".format(protein_cds,protein_cds,blast_out)
+    cmd2 = "blastp -db {0} -query {1} -num_threads {2} -outfmt '6 qseqid sseqid pident qcovs' > {3}".format(protein_cds,
+                                                                                                            protein_cds,
+                                                                                                            blastp_threads,
+                                                                                                            blast_out)
     os.system(cmd2)
 
 #Process blast output
 
-def process_blast_out(protein_cds,identity,coverage):
+def process_blast_out(protein_cds,identity,coverage,mcl_threads,mcl_inflation):
     blast_out = protein_cds+'.blast_out'
     blast_processed = protein_cds+'.blast_processed'
     mcl_out = protein_cds+'.mcl_out'
@@ -55,4 +58,4 @@ def process_blast_out(protein_cds,identity,coverage):
     #Clustering using mcl
     #Step 4: Clustering
     print "Step 5 of 10: Clustering proteins with Markov clustering algorithm...", datetime.now()
-    os.system("mcl {0} --abc -o {1}".format(blast_processed, mcl_out))
+    os.system("mcl {0} -I {1} -te {2} --abc -o {3}".format(blast_processed, mcl_inflation, mcl_threads, mcl_out))
