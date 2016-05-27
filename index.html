@@ -58,39 +58,60 @@ For YN00 from PAML, file path of the YN00 binary is required to be set from comm
 <li><a href="https://www.python.org/"><strong>Python 2.x</strong></a></li>
 <li>  Modules can be installed using <a href="https://pip.pypa.io/en/stable/installing/">pip</a> <code>pip install [module_name]</code>
 </li>
-<li>  <strong>Pandas</strong>
+<li>  <strong>Pandas</strong> v0.16.2</li>
+<li>  <strong>BioPython</strong> v1.64</li>
+<li>  <strong>Seaborn</strong> v0.7.0</li>
+<li>[<strong>BLAST for LINUX</strong>] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+ v2.2.26 -- <a href="http://www.ncbi.nlm.nih.gov/books/NBK52640/">Installation guide</a>
 </li>
-<li>  <strong>BioPython</strong>
-</li>
-<li>  <strong>Seaborn</strong>
-</li>
-<li>[<strong>BLAST for LINUX</strong>] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.3.0 -- <a href="http://www.ncbi.nlm.nih.gov/books/NBK52640/">Installation guide</a>
-</li>
-<li><a href="http://micans.org/mcl/"><strong>MCL</strong></a></li>
-<li><a href="http://www.drive5.com/muscle/"><strong>MUSCLE</strong></a></li>
-<li><a href="http://abacus.gene.ucl.ac.uk/software/paml.html#download"><strong>YN00</strong></a></li>
+<li>
+<a href="http://micans.org/mcl/"><strong>MCL</strong></a> v14-137</li>
+<li>
+<a href="http://www.drive5.com/muscle/"><strong>MUSCLE</strong></a> v3.8.31</li>
+<li>
+<a href="http://abacus.gene.ucl.ac.uk/software/paml.html#download"><strong>YN00</strong></a> v4.8</li>
 </ul>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>USAGE</h2>
 
-<pre><code>usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-o OUTPUT_PREF]
-                        [-d WORKING_DIR] [-y YN00_PATH] [--identity IDENTITY]
-                        [--coverage COVERAGE]
+<pre><code>usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-I CDS_FOLDER]
+                        [-o OUTPUT_PREF] [-d WORKING_DIR] [-y YN00_PATH]
+                        [--identity IDENTITY] [--coverage COVERAGE]
+                        [--blastp_threads BLASTP_THREADS]
+                        [--mcl_threads MCL_THREADS]
+                        [--mcl_inflation MCL_INFLATION]
+                        [--cluster_aln_threads CLUSTER_ALN_THREADS]
 
 Generate kS distrbution histogram to detect Whole Genome Duplication (WGD)
 events. Taking the full coding sequences of an organism as input.
 
-  -h, --help           show this help message and exit
-  -i NUCLEOTIDE_CDS    Full coding sequences of the organism of interest.
-  -o OUTPUT_PREF       Prefix for the MCL clustered files.
-  -d WORKING_DIR       Working directory to store intermediate files of each
-                       step. Default: ./ .
-  -y YN00_PATH         File path to yn00 executable.
-  --identity IDENTITY  Threshold of percentage identity in BLAST result.
-                       Default: 50 .
-  --coverage COVERAGE  Threshold of percentage alignment coverage in BLAST
-                       result. Default: 30 .
+optional arguments:
+  -h, --help            show this help message and exit
+  -i NUCLEOTIDE_CDS     Full coding sequences of the organism of interest.
+  -I CDS_FOLDER         A directory with CDS files of different organisms
+                        only. NOTE: This option cannot be used with -i at the
+                        same time.
+  -o OUTPUT_PREF        Prefix for the MCL clustered files.
+  -d WORKING_DIR        Working directory to store intermediate files of each
+                        step. Default: ./ .
+  -y YN00_PATH          File path to yn00 executable.
+  --identity IDENTITY   Threshold of percentage identity in BLAST result.
+                        Default: 50 .
+  --coverage COVERAGE   Threshold of percentage alignment coverage in BLAST
+                        result. Default: 30 .
+  --blastp_threads BLASTP_THREADS
+                        Number of threads for running BLASTp. Default: 8 .
+  --mcl_threads MCL_THREADS
+                        Number of threads for running MCL. Default: 1 .
+  --mcl_inflation MCL_INFLATION
+                        Tune the granularity of clustering. Usually choose
+                        from the range of [1.2, 5.0]. 5.0 makes it finely
+                        grained and 1.2 makes clustering coarsed. Default: 2.0
+                        .
+  --cluster_aln_threads CLUSTER_ALN_THREADS
+                        Number of threads for parallelling the alignment of
+                        clusters. Default: 8 .
+
 </code></pre>
 
       <footer class="site-footer">
