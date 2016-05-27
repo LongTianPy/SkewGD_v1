@@ -46,21 +46,42 @@ USAGE
 -----
 
 ```
-usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-o OUTPUT_PREF]
-                        [-d WORKING_DIR] [-y YN00_PATH] [--identity IDENTITY]
-                        [--coverage COVERAGE]
+usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-I CDS_FOLDER]
+                        [-o OUTPUT_PREF] [-d WORKING_DIR] [-y YN00_PATH]
+                        [--identity IDENTITY] [--coverage COVERAGE]
+                        [--blastp_threads BLASTP_THREADS]
+                        [--mcl_threads MCL_THREADS]
+                        [--mcl_inflation MCL_INFLATION]
+                        [--cluster_aln_threads CLUSTER_ALN_THREADS]
 
 Generate kS distrbution histogram to detect Whole Genome Duplication (WGD)
 events. Taking the full coding sequences of an organism as input.
 
-  -h, --help           show this help message and exit
-  -i NUCLEOTIDE_CDS    Full coding sequences of the organism of interest.
-  -o OUTPUT_PREF       Prefix for the MCL clustered files.
-  -d WORKING_DIR       Working directory to store intermediate files of each
-                       step. Default: ./ .
-  -y YN00_PATH         File path to yn00 executable.
-  --identity IDENTITY  Threshold of percentage identity in BLAST result.
-                       Default: 50 .
-  --coverage COVERAGE  Threshold of percentage alignment coverage in BLAST
-                       result. Default: 30 .
+optional arguments:
+  -h, --help            show this help message and exit
+  -i NUCLEOTIDE_CDS     Full coding sequences of the organism of interest.
+  -I CDS_FOLDER         A directory with CDS files of different organisms
+                        only. NOTE: This option cannot be used with -i at the
+                        same time.
+  -o OUTPUT_PREF        Prefix for the MCL clustered files.
+  -d WORKING_DIR        Working directory to store intermediate files of each
+                        step. Default: ./ .
+  -y YN00_PATH          File path to yn00 executable.
+  --identity IDENTITY   Threshold of percentage identity in BLAST result.
+                        Default: 50 .
+  --coverage COVERAGE   Threshold of percentage alignment coverage in BLAST
+                        result. Default: 30 .
+  --blastp_threads BLASTP_THREADS
+                        Number of threads for running BLASTp. Default: 8 .
+  --mcl_threads MCL_THREADS
+                        Number of threads for running MCL. Default: 1 .
+  --mcl_inflation MCL_INFLATION
+                        Tune the granularity of clustering. Usually choose
+                        from the range of [1.2, 5.0]. 5.0 makes it finely
+                        grained and 1.2 makes clustering coarsed. Default: 2.0
+                        .
+  --cluster_aln_threads CLUSTER_ALN_THREADS
+                        Number of threads for parallelling the alignment of
+                        clusters. Default: 8 .
+
 ```
