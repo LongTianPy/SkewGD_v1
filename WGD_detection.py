@@ -53,7 +53,9 @@ def main(argv=None):
                             working_dir=working_dir, blastp_threads=blastp_threads,mcl_threads=mcl_threads,
                             mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,yn00_path=yn00_binary)
     elif args.cds_folder and not args.nucleotide_cds:
-        pass
+        cds_folder = args.cds_folder
+        nucleotide_cds_list = [join(cds_folder, f) for f in listdir(cds_folder) if isfile(join(cds_folder,f))]
+
     elif args.nucleotide_cds and args.cds_folder:
         print "-i and -I cannot be used at the same time.\nExiting..."
         system.exit()
@@ -75,7 +77,9 @@ def get_parsed_args():
                     "Taking the full coding sequences of an organism as input.")
     parser.add_argument("-i", dest='nucleotide_cds', help="Full coding sequences of the organism of interest.")
     parser.add_argument("-I", dest="cds_folder",help="A directory with CDS files of different organisms only. NOTE: This"
-                                                     " option cannot be used with -i at the same time.")
+                                                     " option cannot be used with -i at the same time. Options for threads"
+                                                     "need to be set to reasonable number since a maximum of 2 files can"
+                                                     "be running at the same time.")
     parser.add_argument("-o", dest='output_pref', help="Prefix for the MCL clustered files.")
     parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of "
                                                                      "each step. Default: ./ .")
@@ -143,7 +147,7 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file, yn00_binary):
 def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
                  cluster_aln_threads,yn00_path):
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage,
-                                 output_prefix=out_prefix, working_dir=working_dir, blastp_threads=blastp_threads,
+                                 output_prefix=output_prefix, working_dir=working_dir, blastp_threads=blastp_threads,
                                  mcl_threads=mcl_threads, mcl_inflation=mcl_inflation)
     kS_df_total = pd.DataFrame()
     nucleotide_cds_trunc = nucleotide_cds + '_trunc'
