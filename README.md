@@ -39,7 +39,7 @@ For YN00 from PAML, file path of the YN00 binary is required to be set from comm
 * [**BLAST for LINUX**] ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+ v2.2.26 -- [Installation guide](http://www.ncbi.nlm.nih.gov/books/NBK52640/)
 * [**MCL**](http://micans.org/mcl/) v14-137
 * [**MUSCLE**](http://www.drive5.com/muscle/) v3.8.31
-* [**YN00**](http://abacus.gene.ucl.ac.uk/software/paml.html#download) v4.8
+* [**YN00**](http://abacus.gene.ucl.ac.uk/software/paml.html#download) v4.8 Ubuntu users can directly install by ```sudo apt-get install paml```
 
 
 USAGE
