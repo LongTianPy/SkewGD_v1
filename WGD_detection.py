@@ -148,7 +148,7 @@ def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_d
                  cluster_aln_threads,yn00_path):
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage,
                                  output_prefix=output_prefix, working_dir=working_dir, blastp_threads=blastp_threads,
-                                 mcl_threads=mcl_threads, mcl_inflation=mcl_inflation)
+                                 mcl_threads=mcl_threads, mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads)
     kS_df_total = pd.DataFrame()
     nucleotide_cds_trunc = nucleotide_cds + '_trunc'
     print "Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS " \
