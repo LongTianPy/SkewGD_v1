@@ -41,7 +41,7 @@ def main(argv=None):
     coverage = args.coverage
     blastp_threads = args.blastp_threads
     mcl_threads = args.mcl_threads
-    mcl_inflation = args.mcl_threads
+    mcl_inflation = args.mcl_inflation
     cluster_aln_threads=args.cluster_aln_threads
     print "=================================================="
     print "Welcome to SkewGD pipeline"
