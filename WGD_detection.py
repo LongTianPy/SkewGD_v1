@@ -14,6 +14,7 @@ from datetime import datetime
 from distutils.spawn import find_executable
 import sys
 from functools import partial
+import shutil
 # SCRIPTS
 import prot_to_cds
 import run_paml_yn00
@@ -88,10 +89,11 @@ def main(argv=None):
                             working_dir=working_dir, blastp_threads=blastp_threads,mcl_threads=mcl_threads,
                             mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,yn00_path=yn00_binary,
                             blastp_exe=blastp_exe,makeblastdb_exe=makeblastdb_exe,muscle_exe=muscle_exe,mcl_exe=mcl_exe)
+        clean(working_dir=working_dir,prefix=out_prefix)
     elif args.cds_folder and not args.nucleotide_cds:
         cds_folder = args.cds_folder
         nucleotide_cds_list = [join(cds_folder, f) for f in listdir(cds_folder) if isfile(join(cds_folder,f))]
-
+        clean(working_dir=working_dir, prefix=out_prefix)
     elif args.nucleotide_cds and args.cds_folder:
         print "-i and -I cannot be used at the same time.\nExiting..."
         sys.exit()
@@ -99,6 +101,9 @@ def main(argv=None):
         print "Either one CDS file or a directory with several CDS files should be provided with -i or -I, respectively."
         print "Exiting..."
         sys.exit()
+
+
+
 # Arguments
 def get_parsed_args():
     """
@@ -150,6 +155,16 @@ def get_parsed_args():
 
     args = parser.parse_args()
     return args
+
+# Clean working directory
+def clean(working_dir,prefix):
+    os.mkdir(join(working_dir+"output"))
+    files = [join(working_dir,file) for file in listdir(working_dir) if isfile(join(working_dir,file))]
+    for file in files:
+        if file.startswith(prefix):
+            shutil.move(file,join(working_dir,"output/"))
+
+
 
 # Individual wrappers
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
