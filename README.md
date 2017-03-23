@@ -32,14 +32,15 @@ WGD_detection is developed in Python 2.x with modules and external software, and
 
 While running this pipeline, a dependency check is at first performed to make sure every dependency is correctly installed.
 
-For information about installing the dependencies, please see below.
+For information about installing the dependencies, please see below. The version numbers listed below represents the version
+this pipeline is developed with, and using the newest version is recommended.
 
 * [**Python 2.x**](https://www.python.org/)
 *   Modules can be installed using [pip](https://pip.pypa.io/en/stable/installing/) `pip install [module_name]`
 *   **Pandas** v0.16.2
 *   **BioPython** v1.64
 *   **Seaborn** v0.7.0
-* **BLAST for LINUX** ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+ v2.2.26 -- [Installation guide](http://www.ncbi.nlm.nih.gov/books/NBK52640/) (Ubuntu users can directly install by ```sudo apt-get install ncbi-blast+```
+* **BLAST for LINUX** ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+ v2.2.31 -- [Installation guide](http://www.ncbi.nlm.nih.gov/books/NBK52640/) Ubuntu users can directly install by ```sudo apt-get install ncbi-blast+```
 * [**MCL**](http://micans.org/mcl/) v14-137
 * [**MUSCLE**](http://www.drive5.com/muscle/) v3.8.31
 * [**YN00**](http://abacus.gene.ucl.ac.uk/software/paml.html#download) v4.8 Ubuntu users can directly install by ```sudo apt-get install paml```
