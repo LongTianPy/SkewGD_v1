@@ -13,6 +13,7 @@ import pandas as pd
 from datetime import datetime
 from distutils.spawn import find_executable
 import sys
+from functools import partial
 # SCRIPTS
 import prot_to_cds
 import run_paml_yn00
@@ -85,7 +86,8 @@ def main(argv=None):
         nucleotide_cds = args.nucleotide_cds
         pipeline_single_cds(nucleotide_cds=nucleotide_cds,output_prefix=out_prefix,identity=identity,coverage=coverage,
                             working_dir=working_dir, blastp_threads=blastp_threads,mcl_threads=mcl_threads,
-                            mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,yn00_path=yn00_binary)
+                            mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,yn00_path=yn00_binary,
+                            blastp_exe=blastp_exe,makeblastdb_exe=makeblastdb_exe,muscle_exe=muscle_exe,mcl_exe=mcl_exe)
     elif args.cds_folder and not args.nucleotide_cds:
         cds_folder = args.cds_folder
         nucleotide_cds_list = [join(cds_folder, f) for f in listdir(cds_folder) if isfile(join(cds_folder,f))]
@@ -155,16 +157,17 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir,blas
     protein_cds = nucleotide_cds+".protein"
     print "Step 1 of 9: Translating CDS to protein sequences...", datetime.now()
     convert1.convert(nucleotide_cds)
-    process_blast.run_blast(protein_cds=protein_cds,blastp_threads=blastp_threads)
+    process_blast.run_blast(protein_cds=protein_cds,blastp_threads=blastp_threads,blastp_exe=blastp_exe,makeblastdb_exe=makeblastdb_exe)
     mcl_out = protein_cds+".mcl_out"
     process_blast.process_blast_out(protein_cds=protein_cds,identity=identity,coverage=coverage,mcl_threads=mcl_threads,
-                                    mcl_inflation=mcl_inflation)
+                                    mcl_inflation=mcl_inflation,mcl_exe=mcl_exe)
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     print "Step 6 of 10: Aligning protein sequences within each cluster...", datetime.now()
     pool_size = cluster_aln_threads
     pool = mp.Pool(processes=pool_size)
-    pool.map(run_muscle.muscle, cluster_file_list)
+    partial_muscle = partial(run_muscle.muscle,muscle_exe=muscle_exe)
+    pool.map(partial_muscle, cluster_file_list)
     afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     return afa_file_list
 
