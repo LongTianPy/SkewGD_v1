@@ -11,7 +11,7 @@ from os.path import isfile, join
 import multiprocessing as mp
 import pandas as pd
 from datetime import datetime
-from Bio import SeqIO
+from distutils.spawn import find_executable
 import sys
 # SCRIPTS
 import prot_to_cds
@@ -21,6 +21,7 @@ import convert1
 import process_blast
 import process_cluster_all
 import run_muscle
+import config
 
 # FUNCTIONS
 
@@ -34,9 +35,42 @@ def main(argv=None):
         working_dir = working_dir + '/'
     else:
         working_dir = working_dir
-
     out_prefix = args.output_pref
-    yn00_binary = args.yn00_path
+    if find_executable(config.YN00_DEFAULT) is not None:
+        yn00_binary = config.YN00_DEFAULT
+    else:
+        if find_executable(args.yn00_path) is not None:
+            yn00_binary = args.yn00_path
+        else:
+            print("Cannot find yn00 executable, please check if it has been installed.")
+    if find_executable(config.BLASTP_DEFAULT) is not None:
+        blastp_exe = config.BLASTP_DEFAULT
+    else:
+        if find_executable(args.blastp) is not None:
+            blastp_exe = args.blastp
+        else:
+            print("Cannot find blastp executable, please check if it has been installed.")
+    if find_executable(config.MAKEBLASTDB_DEFAULT) is not None:
+        makeblastdb_exe = config.MAKEBLASTDB_DEFAULT
+    else:
+        if find_executable(args.makeblastdb) is not None:
+            makeblastdb_exe = args.makeblastdb
+        else:
+            print("Cannot find makeblastdb executable, please check if it has been installed.")
+    if find_executable(config.MUSCLE_DEFAULT) is not None:
+        muscle_exe = config.MUSCLE_DEFAULT
+    else:
+        if find_executable(args.muscle) is not None:
+            muscle_exe = args.muscle
+        else:
+            print("Cannot find MUSCLE executable, please check if it has been installed.")
+    if find_executable(config.MCL_DEFAULT) is not None:
+        mcl_exe = config.MCL_DEFAULT
+    else:
+        if find_executable(args.mcl) is not None:
+            mcl_exe = args.mcl
+        else:
+            print("Cannot find MCL executable, please check if it has been installed.")
     identity = args.identity
     coverage = args.coverage
     blastp_threads = args.blastp_threads
@@ -58,11 +92,11 @@ def main(argv=None):
 
     elif args.nucleotide_cds and args.cds_folder:
         print "-i and -I cannot be used at the same time.\nExiting..."
-        system.exit()
+        sys.exit()
     elif not args.cds_folder and not args.nucleotide_cds:
         print "Either one CDS file or a directory with several CDS files should be provided with -i or -I, respectively."
         print "Exiting..."
-        system.exit()
+        sys.exit()
 # Arguments
 def get_parsed_args():
     """
@@ -83,7 +117,13 @@ def get_parsed_args():
     parser.add_argument("-o", dest='output_pref', help="Prefix for the MCL clustered files.")
     parser.add_argument("-d", dest='working_dir', default="./", help="Working directory to store intermediate files of "
                                                                      "each step. Default: ./ .")
-    parser.add_argument("-y", dest="yn00_path", help="File path to yn00 executable.")
+    parser.add_argument("--blastp", dest="blastp", help="File path to blastp executable. "
+                                                                                   "Default: /usr/bin/blastp .")
+    parser.add_argument("--makeblastdb", dest="makeblastdb",help="File path to makeblastdb executable. "
+                                                                 "Default: /usr/bin/makeblastdb .")
+    parser.add_argument("--muscle",dest="muscle",help="File path to MUSCLE executable.")
+    parser.add_argument("--mcl",dest="mcl",help="File path to MCL executable. Default: /usr/bin/mcl .")
+    parser.add_argument("--yn00", dest="yn00_path", help="File path to yn00 executable. Default: /usr/bin/yn00 .")
     parser.add_argument("--identity", dest="identity", type=int, default=50, help="Threshold of percentage identity in "
                                                                                   "BLAST result. Default: 50 .")
     parser.add_argument("--coverage", dest="coverage", type=int, default=30, help="Threshold of percentage alignment "
@@ -111,7 +151,7 @@ def get_parsed_args():
 
 # Individual wrappers
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
-                 cluster_aln_threads):
+                 cluster_aln_threads,blastp_exe,makeblastdb_exe,muscle_exe,mcl_exe):
     protein_cds = nucleotide_cds+".protein"
     print "Step 1 of 9: Translating CDS to protein sequences...", datetime.now()
     convert1.convert(nucleotide_cds)
@@ -145,10 +185,11 @@ def Andrew_wrapper(prot_cluster_file, nucleotide_file, yn00_binary):
     return run
 
 def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
-                 cluster_aln_threads,yn00_path):
+                 cluster_aln_threads,yn00_path,blastp_exe,makeblastdb_exe,muscle_exe,mcl_exe):
     afa_file_list = Hong_wrapper(nucleotide_cds=nucleotide_cds, identity=identity, coverage=coverage,
                                  output_prefix=output_prefix, working_dir=working_dir, blastp_threads=blastp_threads,
-                                 mcl_threads=mcl_threads, mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads)
+                                 mcl_threads=mcl_threads, mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,
+                                 blastp_exe=blastp_exe,makeblastdb_exe=makeblastdb_exe,muscle_exe=muscle_exe,mcl_exe=mcl_exe)
     kS_df_total = pd.DataFrame()
     nucleotide_cds_trunc = nucleotide_cds + '_trunc'
     print "Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS " \
@@ -157,7 +198,7 @@ def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_d
     # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     for afa_file in afa_file_list:
         try:
-            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc, yn00_binary)
+            run = Andrew_wrapper(afa_file, nucleotide_cds_trunc, yn00_path)
             ks_df = ks_correction.correct_ks(run)
             kS_df_total = kS_df_total.append(ks_df)
         except:
