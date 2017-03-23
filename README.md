@@ -47,7 +47,10 @@ USAGE
 
 ```
 usage: WGD_detection.py [-h] [-i NUCLEOTIDE_CDS] [-I CDS_FOLDER]
-                        [-o OUTPUT_PREF] [-d WORKING_DIR] [-y YN00_PATH]
+                        [-o OUTPUT_PREF] [-d WORKING_DIR] 
+                        [--blastp BLASTP] [--makeblastdb MAKEBLASTDB]
+                        [--muscle MUSCLE] [--mcl MCL]
+                        [-yn00 YN00_PATH]
                         [--identity IDENTITY] [--coverage COVERAGE]
                         [--blastp_threads BLASTP_THREADS]
                         [--mcl_threads MCL_THREADS]
@@ -62,11 +65,20 @@ optional arguments:
   -i NUCLEOTIDE_CDS     Full coding sequences of the organism of interest.
   -I CDS_FOLDER         A directory with CDS files of different organisms
                         only. NOTE: This option cannot be used with -i at the
-                        same time.
+                        same time. Options for threadsneed to be set to
+                        reasonable number since a maximum of 2 files canbe
+                        running at the same time.
   -o OUTPUT_PREF        Prefix for the MCL clustered files.
   -d WORKING_DIR        Working directory to store intermediate files of each
                         step. Default: ./ .
-  -y YN00_PATH          File path to yn00 executable.
+  --blastp BLASTP       File path to blastp executable. Default:
+                        /usr/bin/blastp .
+  --makeblastdb MAKEBLASTDB
+                        File path to makeblastdb executable. Default:
+                        /usr/bin/makeblastdb .
+  --muscle MUSCLE       File path to MUSCLE executable.
+  --mcl MCL             File path to MCL executable. Default: /usr/bin/mcl .
+  --yn00 YN00_PATH      File path to yn00 executable. Default: /usr/bin/yn00 .
   --identity IDENTITY   Threshold of percentage identity in BLAST result.
                         Default: 50 .
   --coverage COVERAGE   Threshold of percentage alignment coverage in BLAST
@@ -83,5 +95,4 @@ optional arguments:
   --cluster_aln_threads CLUSTER_ALN_THREADS
                         Number of threads for parallelling the alignment of
                         clusters. Default: 8 .
-
 ```

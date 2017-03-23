@@ -10,7 +10,7 @@ from Bio import AlignIO
 from Bio.Data.CodonTable import ambiguous_generic_by_id
 
 if "-v" in sys.argv or "--version" in sys.argv:
-    print "v0.0.5"
+    print("v0.0.5")
     sys.exit(0)
 
 def sys_exit(msg, error_level=1):
@@ -117,14 +117,14 @@ def sequence_back_translate(aligned_protein_record, unaligned_nucleotide_record,
 def back_translate(protein_alignment, nucleotide_dict):
     back_translated_records = []
     for protein in protein_alignment:
-        print str(protein.seq)
-        print str(nucleotide_dict[protein.id].seq)
+        print(str(protein.seq))
+        print(str(nucleotide_dict[protein.id].seq))
         triplets = re.findall('...', str(nucleotide_dict[protein.id].seq))
-        print len(triplets)
+        print(len(triplets))
         aa_pattern = re.compile(r"[A-Z]")
         aa_index = [m.start(0) for m in re.finditer(aa_pattern, str(protein.seq))]
-        print aa_index
-        print len(aa_index)
+        print(aa_index)
+        print(len(aa_index))
         #nucleotide_seq = [triplets[aa_idx] for aa_idx in aa_index]
         #nucleotide_seq = ''.join(nucleotide_seq)
         #back_translated_records.append(SeqIO.SeqRecord(Seq(nucleotide_seq,alphabet=generic_dna),id=protein.id))

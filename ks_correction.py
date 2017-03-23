@@ -10,7 +10,7 @@ import sys
 try:
     import seaborn
 except:
-    print "Please install Python module seaborn. "
+    print("Please install Python module seaborn.")
     sys.exit()
 import matplotlib.pyplot as plt
 from scipy import stats

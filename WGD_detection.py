@@ -79,10 +79,10 @@ def main(argv=None):
     mcl_threads = args.mcl_threads
     mcl_inflation = args.mcl_inflation
     cluster_aln_threads=args.cluster_aln_threads
-    print "=================================================="
-    print "Welcome to SkewGD pipeline"
-    print "Current time:", datetime.now()
-    print "==================================================\n"
+    print("==================================================")
+    print("Welcome to SkewGD pipeline")
+    print("Current time:", datetime.now())
+    print("==================================================\n")
     if args.nucleotide_cds and not args.cds_folder:
         nucleotide_cds = args.nucleotide_cds
         pipeline_single_cds(nucleotide_cds=nucleotide_cds,output_prefix=out_prefix,identity=identity,coverage=coverage,
@@ -95,11 +95,11 @@ def main(argv=None):
         nucleotide_cds_list = [join(cds_folder, f) for f in listdir(cds_folder) if isfile(join(cds_folder,f))]
         clean(working_dir=working_dir, prefix=out_prefix)
     elif args.nucleotide_cds and args.cds_folder:
-        print "-i and -I cannot be used at the same time.\nExiting..."
+        print("-i and -I cannot be used at the same time.\nExiting...")
         sys.exit()
     elif not args.cds_folder and not args.nucleotide_cds:
-        print "Either one CDS file or a directory with several CDS files should be provided with -i or -I, respectively."
-        print "Exiting..."
+        print("Either one CDS file or a directory with several CDS files should be provided with -i or -I, respectively.")
+        print("Exiting...")
         sys.exit()
 
 
@@ -170,7 +170,7 @@ def clean(working_dir,prefix):
 def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
                  cluster_aln_threads,blastp_exe,makeblastdb_exe,muscle_exe,mcl_exe):
     protein_cds = nucleotide_cds+".protein"
-    print "Step 1 of 9: Translating CDS to protein sequences...", datetime.now()
+    print("Step 1 of 9: Translating CDS to protein sequences...", datetime.now())
     convert1.convert(nucleotide_cds)
     process_blast.run_blast(protein_cds=protein_cds,blastp_threads=blastp_threads,blastp_exe=blastp_exe,makeblastdb_exe=makeblastdb_exe)
     mcl_out = protein_cds+".mcl_out"
@@ -178,7 +178,7 @@ def Hong_wrapper(nucleotide_cds,output_prefix,identity,coverage,working_dir,blas
                                     mcl_inflation=mcl_inflation,mcl_exe=mcl_exe)
     process_cluster_all.process_cluster(mcl_out=mcl_out, protein_cds=protein_cds, output_prefix=output_prefix,working_dir=working_dir)
     cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
-    print "Step 6 of 10: Aligning protein sequences within each cluster...", datetime.now()
+    print("Step 6 of 10: Aligning protein sequences within each cluster...", datetime.now())
     pool_size = cluster_aln_threads
     pool = mp.Pool(processes=pool_size)
     partial_muscle = partial(run_muscle.muscle,muscle_exe=muscle_exe)
@@ -210,8 +210,8 @@ def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_d
                                  blastp_exe=blastp_exe,makeblastdb_exe=makeblastdb_exe,muscle_exe=muscle_exe,mcl_exe=mcl_exe)
     kS_df_total = pd.DataFrame()
     nucleotide_cds_trunc = nucleotide_cds + '_trunc'
-    print "Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS " \
-          "and correcting kS...", datetime.now()
+    print("Step: 7, 8 and 9 of 10: Reverse translating proteins based on provided CDS, running YN00 to calculate kS " \
+          "and correcting kS...", datetime.now())
     # cluster_file_list = [join(working_dir,f) for f in listdir(working_dir) if isfile(join(working_dir,f)) and f.endswith(".txt")]
     # afa_file_list = [cluster_file+'.afa' for cluster_file in cluster_file_list]
     for afa_file in afa_file_list:
@@ -220,16 +220,16 @@ def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_d
             ks_df = ks_correction.correct_ks(run)
             kS_df_total = kS_df_total.append(ks_df)
         except:
-            print "Error in " + afa_file + ", skipped."
+            print("Error in " + afa_file + ", skipped.")
             continue
     # Draw histogram
-    print "Step 10 out of 10: Generating results and plotting on canvas...", datetime.now()
+    print("Step 10 out of 10: Generating results and plotting on canvas...", datetime.now())
     kS_df_total.to_csv(working_dir + "ks.csv")
     ks_correction.draw_histo(kS_df_total, working_dir)
-    print "=================================================="
-    print "Thank you for using SkewGD, your analysis has been completed."
-    print "Current time:", datetime.now()
-    print "==================================================\n"
+    print("==================================================")
+    print("Thank you for using SkewGD, your analysis has been completed.")
+    print("Current time:", datetime.now())
+    print("==================================================\n")
     return kS_df_total
 
 # def pipeline_folder_cds(cds_folder,output_prefix,identity,coverage,working_dir,blastp_threads,mcl_threads,mcl_inflation,
