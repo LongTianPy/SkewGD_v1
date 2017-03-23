@@ -28,8 +28,11 @@ WORKFLOW
 DEPENDENCIES AND REQUIREMENTS
 -----------------------------
 
-WGD_detection is developed in Python 2.x with modules and external software. Except Python modules, make sure all external software can be executed by directly using software name, i.e. `python`, `blastp`, `mcl` and `muscle`.
-For YN00 from PAML, file path of the YN00 binary is required to be set from command line.
+WGD_detection is developed in Python 2.x with modules and external software, and is Python 3 compatible.
+
+While running this pipeline, a dependency check is at first performed to make sure every dependency is correctly installed.
+
+For information about installing the dependencies, please see below.
 
 * [**Python 2.x**](https://www.python.org/)
 *   Modules can be installed using [pip](https://pip.pypa.io/en/stable/installing/) `pip install [module_name]`
