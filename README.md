@@ -72,7 +72,10 @@ optional arguments:
                         same time. Options for threadsneed to be set to
                         reasonable number since a maximum of 2 files canbe
                         running at the same time.
-  -o OUTPUT_PREF        Prefix for the MCL clustered files.
+  -o OUTPUT_PREF        Prefix for the MCL clustered files. 
+                        Default: Prefix of input file.
+                        This option is ignored if otherwise indicated when 
+                        "-I" is used.
   -d WORKING_DIR        Working directory to store intermediate files of each
                         step. Default: ./ .
   --blastp BLASTP       File path to blastp executable. Default:

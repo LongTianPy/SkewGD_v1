@@ -163,14 +163,31 @@ def correct_ks(yn00):
     ks_df['kS_values'] = ks_per_cluster.values()
     return ks_df
 
-def draw_histo(ks_df, working_dir):
+def draw_histo(ks_df, working_dir, output_prefix):
     # print ks_df
-    size = len(ks_df)
-    ax = seaborn.distplot(a=ks_df["kS_values"], kde=False,kde_kws={"color":"red"}, axlabel=False,bins=100)
-    ax.set(xlabel="kS", ylabel= "Frequency", title="kS distribution",xlim=(0, 5))
-    plt.savefig(working_dir+"ks_distribution.pdf",format="pdf")
-    plt.clf()
+    if "DISPLAY" not in os.environ:
+        print("The DISPLAY environment variable is not set. Plotting is aborted.\n"
+              "The Ks distribution has been stored in your working directory in CSV format.\n"
+              "Once you have your DISPLAY variable set, you can come back and re-plot the distribution\n"
+              "using your method of interest, or use the plotting function of this pipeline by: \n"
+              "python {Directory to WGD}/ks_correction.py {INPUT FILE PATH}")
+    else:
+        size = len(ks_df)
+        ax = seaborn.distplot(a=ks_df["kS_values"], kde=False,kde_kws={"color":"red"}, axlabel=False,bins=100)
+        ax.set(xlabel="kS", ylabel= "Frequency", title="kS distribution",xlim=(0, 5))
+        plt.savefig(working_dir+"{0}_ks_distribution.pdf".format(output_prefix),format="pdf")
+        plt.clf()
 
+if __name__ == "__main__":
+    ks_file = sys.argv[1]
+    if "/" in ks_file:
+        working_dir = "/".join(ks_file.split("/")[:-1])
+    else:
+        working_dir = "./"
+    output_prefix = ".".join(ks_file.split(".")[:-1])
+    ks_df = pd.read_csv(ks_file,header=0,index_col=0)
+    draw_histo(ks_df,working_dir,output_prefix)
+    print("The Ks distribution histogram has been plotted and saved in the same directory of your input file.")
 
 
 

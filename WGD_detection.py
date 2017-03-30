@@ -37,7 +37,7 @@ def main(argv=None):
         working_dir = working_dir + '/'
     else:
         working_dir = working_dir
-    out_prefix = args.output_pref
+    # out_prefix = args.output_pref
     if find_executable(config.YN00_DEFAULT) is not None:
         yn00_binary = config.YN00_DEFAULT
     else:
@@ -85,6 +85,10 @@ def main(argv=None):
     print("==================================================\n")
     if args.nucleotide_cds and not args.cds_folder:
         nucleotide_cds = args.nucleotide_cds
+        if args.output_pref is None:
+            out_prefix = ".".join(nucleotide_cds.split(".")[:-1])
+        else:
+            out_prefix = args.output_pref
         pipeline_single_cds(nucleotide_cds=nucleotide_cds,output_prefix=out_prefix,identity=identity,coverage=coverage,
                             working_dir=working_dir, blastp_threads=blastp_threads,mcl_threads=mcl_threads,
                             mcl_inflation=mcl_inflation,cluster_aln_threads=cluster_aln_threads,yn00_path=yn00_binary,
@@ -93,12 +97,14 @@ def main(argv=None):
     elif args.cds_folder and not args.nucleotide_cds:
         cds_folder = args.cds_folder
         nucleotide_cds_list = [join(cds_folder, f) for f in listdir(cds_folder) if isfile(join(cds_folder,f))]
+        output_prefix_list = {i:".".join(i.split(".")[:-1]) for i in nucleotide_cds_list}
+
         clean(working_dir=working_dir, prefix=out_prefix)
     elif args.nucleotide_cds and args.cds_folder:
         print("-i and -I cannot be used at the same time.\nExiting...")
         sys.exit()
     elif not args.cds_folder and not args.nucleotide_cds:
-        print("Either one CDS file or a directory with several CDS files should be provided with -i or -I, respectively.")
+        print("Either one CDS file or a directory with CDS files should be provided with -i or -I, respectively.")
         print("Exiting...")
         sys.exit()
 
@@ -224,8 +230,8 @@ def pipeline_single_cds(nucleotide_cds,output_prefix,identity,coverage,working_d
             continue
     # Draw histogram
     print("Step 10 out of 10: Generating results and plotting on canvas...", datetime.now())
-    kS_df_total.to_csv(working_dir + "ks.csv")
-    ks_correction.draw_histo(kS_df_total, working_dir)
+    kS_df_total.to_csv(working_dir + "{0}_ks.csv".format(output_prefix))
+    ks_correction.draw_histo(kS_df_total, working_dir, output_prefix)
     print("==================================================")
     print("Thank you for using SkewGD, your analysis has been completed.")
     print("Current time:", datetime.now())
