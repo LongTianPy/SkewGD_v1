@@ -1,5 +1,7 @@
 # SkewGD
-Summation of Ks pairs for Exploration of Whole Genome Duplications -- Whole Genome Duplication detection pipeline
+<p>
+Summation of Ks pairs for Exploration of Whole Genome Duplications -- Whole Genome Duplication detection pipeline.
+<span style='color:white'>尽管是个group project，借这个地方给刘佳怡小朋友表个白</span></p>
 
 INTRODUCTION
 ------------
